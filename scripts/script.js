@@ -1,5 +1,4 @@
 $(function() {
-
     //Cuando inicia el juego
     $('#contenedor').html(
         "<header></header>" +
@@ -43,6 +42,7 @@ function cargarEstructura(){
 }
 
 function seleccionPartida(){
+    document.title = "Laberinto | Partida";
     $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
     $('#jugar').addClass('paginaAct');
     $('main').html(
@@ -64,6 +64,7 @@ function seleccionPartida(){
 }
 
 function cargarInstrucciones(){
+    document.title = "Laberinto | Instrucciones";
     $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
     $('#instrucciones').addClass('paginaAct');
     $('main').html(
@@ -74,6 +75,7 @@ function cargarInstrucciones(){
 //Función que crea el marcador con las posiciones de los jugares
 //Aquí tengo un problema de sincronia
 function cargarMarcador(){
+    document.title = "Laberinto | Marcador";
     $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
     $('#marcador').addClass('paginaAct');
     $('main').html('<div id="tablaMarcador"></div>');        
@@ -111,6 +113,7 @@ function cargarUsuarios(){
 
 /**/
 function crearPartida(numJugadores){
+    document.title = "Laberinto | Partida " + numJugadores + " jugadores";
     $('header').html('<img src="imagenes/flecha.png" width="50px" title="Volver">');
     $(document).on('click', 'img[src*=flecha]', function(){
         cargarEstructura();
@@ -140,10 +143,63 @@ function elegirJugador(jugador){
     })
 }
 
+// function cargarTablero(numJugadores){
+//     tamanhoTablero = 49;
+//     lado = 9;
+//     let cabecera = '<img id="equis" src="./imagenes/equis.png"><div id="jugadores">';
+//     for (let k = 0; k < numJugadores; k++) {
+//         cabecera += '<div id="jugador">'+
+//             '<div>Nombre</div>' +
+//             '<div>Puntuacion</div>'+
+//         '</div><dialog id="ventana"></dialog>';
+//     }
+//     cabecera += '</div>';
+//     $('header').html(cabecera);
+//     $("#equis").on('click', function(){
+//         $('#ventana').html(cargarVentana('cerrar'));
+//         $("#ventana").show();
+//     })
+
+
+//     texto ='<div id="tablero">';
+//     for (let i = 0; i < lado; i++) {
+//         texto += '<div class="columna">';
+//         for (let j = 0; j < lado; j++) {
+//             if(i==0){
+//                 if(j%2==0 && j>0 && j<lado-1) texto+= '<img src="imagenes/flecha-abajo.png">';
+//                 else texto+= "<p></p>";
+//             }else if(j==0){
+//                 if(i%2==0 && i>0 && i<lado-1)texto+= '<img src="imagenes/flecha-derecha.png">';
+//                 else texto+= "<p></p>";
+//             }else if(j==lado-1){
+//                 if(i%2==0 && i>0 && i<lado-1)texto+= '<img src="imagenes/flecha-izquierda.png">';
+//                 else texto+= "<p></p>";
+//             }else if(i==lado-1){
+//                 if(j%2==0 && j>0 && j<lado-1) texto+= '<img src="imagenes/flecha-arriba.png">';
+//                 else texto+= "<p></p>";
+//             }else{
+//                 let ladi = Math.floor(Math.random() * 3);
+//                 let imagen ='';
+//                 if(ladi==0) imagen = 'imagenes/curva.png';
+//                 else if(ladi == 1) imagen = 'imagenes/recto.png';
+//                 else imagen = 'imagenes/tres.png';
+//                 texto += '<img id="carta" data-lado="' + ladi + '" src="'+ imagen+'">';
+//             }
+//         }
+//         texto += "</div>";
+            
+//     }
+//     texto += "</div>";
+//     $('main').html(texto);
+//     $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
+
+// }
+
 function cargarTablero(numJugadores){
     tamanhoTablero = 49;
-    lado = 7;
-    let cabecera = '<img id="equis" src="./imagenes/equis.png"><div id="jugadores">';
+    lado = 9;
+    let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
+                    '<div id="jugadores">';
     for (let k = 0; k < numJugadores; k++) {
         cabecera += '<div id="jugador">'+
             '<div>Nombre</div>' +
@@ -156,26 +212,55 @@ function cargarTablero(numJugadores){
         $('#ventana').html(cargarVentana('cerrar'));
         $("#ventana").show();
     })
-
+    $("#reglas").on('click', function(){
+        $('#ventana').html(cargarVentana('reglas'));
+        $("#ventana").show();
+    })
 
     texto ='<div id="tablero">';
-    for (let i = 0; i < lado; i++) {
-        texto += '<div class="columna">';
-        for (let j = 0; j < lado; j++) {
-            let lado = Math.floor(Math.random() * 3);
-			let imagen ='';
-			if(lado==0) imagen = 'imagenes/curva.png';
-            else if(lado == 1) imagen = 'imagenes/recto.png';
-            else imagen = 'imagenes/tres.png';
-			// aplicar a clase correspondente ás imaxes
-			texto += '<img id="carta" data-lado="' + lado + '" src="'+ imagen+'">';
+    $.getJSON('servidor/cargarCartas.php', function(datos){
+
+        for (let i = 0; i < lado; i++) {
+            texto += '<div class="columna">';         
+            for (let j = 0; j < lado; j++) {        
+            let bandera = true;
+                $.each(datos, function(){
+                    if(this.fila==i && this.columna==j){
+                        console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
+                        texto += '<img src="imagenes/reservadas/'+ this.url+'">';
+                        bandera = false;
+                    }
+                })
+                if(bandera){
+                    if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
+                        let ladi = Math.floor(Math.random() * 3);
+                        let imagen ='';
+                        if(ladi==0) imagen = 'imagenes/curva.png';
+                        else if(ladi == 1) imagen = 'imagenes/recto.png';
+                        else imagen = 'imagenes/tres.png';
+                        texto += '<img id="carta" data-lado="' + ladi + '" src="'+ imagen+'">';
+                    }else{
+                        texto += '<p></p>';
+                    }
+
+                }
+
+            }
+            texto += "</div>";
+               
         }
         texto += "</div>";
-            
-    }
-    texto += "</div>";
-    $('main').html(texto);
+        $('main').html(texto);
+        $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
+        
+    })
 
+}
+
+function cargarCartas(){
+    $.getJSON('servidor/cargarCartas.php', function(datos){
+        return datos;
+    })
 }
 
 //Ventana de mensajes
