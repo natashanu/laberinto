@@ -189,13 +189,13 @@ button, input, select{
     margin: auto;
 }
 
-.columna{
+.fila{
     display: grid;
     grid-template-columns: repeat(9, 0.5fr);
     /* grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr; */
 }
 
-.columna img{
+.fila img{
     object-fit: contain;
     width: 100%;
     height: 100%;

@@ -17,15 +17,15 @@ puntos int,
 insert into usuario (nombre, puntos) values ('natasha', 0),('pepe',0);
 
 -- Creación de la tabla cartasReservadas
-create table if not exists cartas(
+create table if not exists cartas_reservadas(
 idCarta tinyint auto_increment,
-url varchar(25) not null,
+url varchar(30) not null,
 fila int,
 columna int,
-	constraint pk_Carta primary key (idCarta)
+	constraint pk_carta_reservada primary key (idCarta)
 )engine=InnoDB;
 
-insert into cartas(url, fila, columna) values ('flecha-abajo.png', 0, 2), ('flecha-abajo.png', 0, 4), ('flecha-abajo.png', 0, 6),
+insert into cartas_reservadas(url, fila, columna) values ('flecha-abajo.png', 0, 2), ('flecha-abajo.png', 0, 4), ('flecha-abajo.png', 0, 6),
 ('jugador1.png', 1, 1), ('jugador3.png', 1, 7), ('jugador2.png', 7, 1), ('jugador4.png', 7, 7),
 ('flecha-derecha.png', 2, 0), ('flecha-derecha.png', 4, 0), ('flecha-derecha.png', 6, 0),
 ('flecha-arriba.png', 8, 2),('flecha-arriba.png', 8, 4),('flecha-arriba.png', 8, 6),
@@ -34,4 +34,50 @@ insert into cartas(url, fila, columna) values ('flecha-abajo.png', 0, 2), ('flec
 ('abajo.png', 1, 3), ('abajo.png', 1, 5), ('abajo.png', 3, 5), 
 ('derecha.png', 3, 1), ('derecha.png', 5, 1), ('derecha.png', 3, 3), 
 ('izquierda.png', 3, 7),('izquierda.png', 5, 7),('izquierda.png', 5, 5);
+
+-- Creación de la tabla de las demás cartas
+create table if not exists cartas(
+idCarta tinyint,
+url varchar(30) not null,
+lado1 varchar(30) not null,
+lado2 varchar(30) not null,
+lado3 varchar(30) not null default '0',
+	constraint pk_carta primary key (idCarta)
+)engine=InnoDB;
+
+insert into cartas values 
+(1, 'recto.png', 'izquierda', 'derecha' , '0'),
+(2, 'recto.png', 'izquierda', 'derecha' , '0'),
+(3, 'recto.png', 'izquierda', 'derecha' , '0'),
+(4, 'recto.png', 'izquierda', 'derecha' , '0'),
+(5, 'recto.png', 'izquierda', 'derecha' , '0'),
+(6, 'recto.png', 'izquierda', 'derecha' , '0'),
+(7, 'recto.png', 'izquierda', 'derecha' , '0'),
+(8, 'recto.png', 'izquierda', 'derecha' , '0'),
+(9, 'recto.png', 'izquierda', 'derecha' , '0'),
+(10, 'recto.png', 'izquierda', 'derecha' , '0'),
+(11, 'recto.png', 'izquierda', 'derecha' , '0'),
+(12, 'recto.png', 'izquierda', 'derecha' , '0'),
+(13, 'curva.png', 'abajo', 'derecha' , '0'),
+(14, 'curva.png', 'abajo', 'derecha' , '0'),
+(15, 'curva.png', 'abajo', 'derecha' , '0'),
+(16, 'curva.png', 'abajo', 'derecha' , '0'),
+(17, 'curva.png', 'abajo', 'derecha' , '0'),
+(18, 'curva.png', 'abajo', 'derecha' , '0'),
+(19, 'curva.png', 'abajo', 'derecha' , '0'),
+(20, 'curva.png', 'abajo', 'derecha' , '0'),
+(21, 'curva.png', 'abajo', 'derecha' , '0'),
+(22, 'curva.png', 'abajo', 'derecha' , '0'),
+(23, 'curva.png', 'abajo', 'derecha' , '0'),
+(24, 'curva.png', 'abajo', 'derecha' , '0'),
+(25, 'curva.png', 'abajo', 'derecha' , '0'),
+(26, 'curva.png', 'abajo', 'derecha' , '0'),
+(27, 'curva.png', 'abajo', 'derecha' , '0'),
+(28, 'curva.png', 'abajo', 'derecha' , '0'),
+(29, 'tres.png', 'izquierda', 'abajo', 'arriba'),
+(30, 'tres.png', 'izquierda', 'abajo', 'arriba'),
+(31, 'tres.png', 'izquierda', 'abajo', 'arriba'),
+(32, 'tres.png', 'izquierda', 'abajo', 'arriba'),
+(33, 'tres.png', 'izquierda', 'abajo', 'arriba'),
+(34, 'tres.png', 'izquierda', 'abajo', 'arriba');
 

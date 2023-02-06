@@ -2,10 +2,9 @@
 	// Conectamos con la base de datos
 	require("conexion.php");
 
-	// Seleccionamos los usuarios dados de alta
+	// Seleccionamos las cartas
    	$consulta = "SELECT * 
-				FROM usuario
-			    ORDER BY nombre";
+				FROM cartas_reservadas";
 
 	$salida = array();
 	if ($datos = $conexion->query($consulta))

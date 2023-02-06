@@ -210,48 +210,53 @@ function cargarTablero(numJugadores){
     $('header').html(cabecera);
     $("#equis").on('click', function(){
         $('#ventana').html(cargarVentana('cerrar'));
+        $('#ventana').css({'z-index':'100'})
         $("#ventana").show();
     })
     $("#reglas").on('click', function(){
         $('#ventana').html(cargarVentana('reglas'));
+        
         $("#ventana").show();
     })
 
     texto ='<div id="tablero">';
-    $.getJSON('servidor/cargarCartas.php', function(datos){
+    $.getJSON('servidor/cargarCartasRes.php', function(cartasRes){
+        $.getJSON('servidor/cargarCartas.php', function(cartas){
+            cartas = cartas.sort((a, b) => 0.5 - Math.random());
+            posicion = 0;
+            console.log(cartas);
+            for (let i = 0; i < lado; i++) {
+                texto += '<div class="fila">';         
+                for (let j = 0; j < lado; j++) {        
+                let bandera = true;
+                    $.each(cartasRes, function(){
+                        if(this.fila==i && this.columna==j){
+                            //console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
+                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+'">';
+                            bandera = false;
+                        }
+                    })
+                    if(bandera){
+                        if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
+                            carta = Object.values(cartas[posicion]);
+                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
+                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
+                            posicion++;
+                        }else{
+                            texto += '<p></p>';
+                        }
 
-        for (let i = 0; i < lado; i++) {
-            texto += '<div class="columna">';         
-            for (let j = 0; j < lado; j++) {        
-            let bandera = true;
-                $.each(datos, function(){
-                    if(this.fila==i && this.columna==j){
-                        console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
-                        texto += '<img src="imagenes/reservadas/'+ this.url+'">';
-                        bandera = false;
-                    }
-                })
-                if(bandera){
-                    if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
-                        let ladi = Math.floor(Math.random() * 3);
-                        let imagen ='';
-                        if(ladi==0) imagen = 'imagenes/curva.png';
-                        else if(ladi == 1) imagen = 'imagenes/recto.png';
-                        else imagen = 'imagenes/tres.png';
-                        texto += '<img id="carta" data-lado="' + ladi + '" src="'+ imagen+'">';
-                    }else{
-                        texto += '<p></p>';
                     }
 
                 }
-
+                texto += "</div>";
+                
             }
             texto += "</div>";
-               
-        }
-        texto += "</div>";
-        $('main').html(texto);
-        $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
+            $('main').html(texto);
+            $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
+            girarCarta();
+        })
         
     })
 
@@ -261,6 +266,39 @@ function cargarCartas(){
     $.getJSON('servidor/cargarCartas.php', function(datos){
         return datos;
     })
+}
+
+function girarCarta(){
+    $('img[data-reservada="NO"]').each(function(){
+        let giros = Math.floor(Math.random() * (4-1)+1);
+        for (let i = 0; i < giros; i++) {
+            this.rotacion=(this.rotacion+90) || 90;
+            this.style.transform="rotate("+this.rotacion+"deg)";    
+            for (let j = 1; j < 4; j++) {
+                let lado = '';
+                let pos = 'lado'+j
+                switch($(this).data(pos)){
+                    case 'izquierda':
+                        lado = 'arriba'; 
+                    break;
+                    case 'derecha':
+                        lado = 'abajo';
+                        break;
+                    case 'abajo':
+                        lado = 'izquierda';
+                        break;
+                    case 'arriba':
+                        lado = 'derecha';
+                        break;
+                    default:
+                }
+                console.log(this.id + ' lado' + j + " "+ lado);
+                $(this).data(pos, lado)
+                console.log($(this).data(pos))
+            }
+        }
+    })
+
 }
 
 //Ventana de mensajes
