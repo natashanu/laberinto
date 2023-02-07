@@ -276,8 +276,8 @@ function girarCarta(){
             this.style.transform="rotate("+this.rotacion+"deg)";    
             for (let j = 1; j < 4; j++) {
                 let lado = '';
-                let pos = 'lado'+j
-                switch($(this).data(pos)){
+                let pos = 'data-lado'+j
+                switch($(this).attr(pos)){
                     case 'izquierda':
                         lado = 'arriba'; 
                     break;
@@ -293,8 +293,8 @@ function girarCarta(){
                     default:
                 }
                 console.log(this.id + ' lado' + j + " "+ lado);
-                $(this).data(pos, lado)
-                console.log($(this).data(pos))
+                $(this).attr(pos, lado)
+                console.log($(this).attr(pos))
             }
         }
     })
