@@ -210,7 +210,7 @@ button, input, select{
 
 .fila div div{
     position: absolute;
-    background-color: aliceblue;
+    border: solid black 2px;
     width: 20px;
     height: 20px;
     top:40%;
@@ -219,18 +219,19 @@ button, input, select{
     border-radius: 15px;
 }
 #pieza_1{
+
     background-color: rgb(227, 114, 231) ;
 }
 
-#pieza_2{
+#pieza_3{
     background-color: rgb(221, 186, 69) ;
 }
 
-#pieza_3{
+#pieza_4{
     background-color:rgb(147, 202, 247) ;
 }
 
-#pieza_4{
+#pieza_2{
     background-color:rgb(166, 248, 146) ;
 }
 
