@@ -114,8 +114,8 @@ function cargarUsuarios(){
 /**/
 function crearPartida(numJugadores){
     document.title = "Laberinto | Partida " + numJugadores + " jugadores";
-    $('header').html('<img src="imagenes/flecha.png" width="50px" title="Volver">');
-    $(document).on('click', 'img[src*=flecha]', function(){
+    $('header').html('<img id="volver" src="imagenes/flecha.png" width="50px" title="Volver">');
+    $(document).on('click', '#volver', function(){
         cargarEstructura();
         seleccionPartida();
     });
@@ -210,12 +210,10 @@ function cargarTablero(numJugadores){
     $('header').html(cabecera);
     $("#equis").on('click', function(){
         $('#ventana').html(cargarVentana('cerrar'));
-        $('#ventana').css({'z-index':'100'})
         $("#ventana").show();
     })
     $("#reglas").on('click', function(){
         $('#ventana').html(cargarVentana('reglas'));
-        
         $("#ventana").show();
     })
 
@@ -232,15 +230,15 @@ function cargarTablero(numJugadores){
                     $.each(cartasRes, function(){
                         if(this.fila==i && this.columna==j){
                             //console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
-                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+'">';
+                            texto += '<div><img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+'"></div>';
                             bandera = false;
                         }
                     })
                     if(bandera){
                         if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
                             carta = Object.values(cartas[posicion]);
-                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
-                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
+                            texto += '<div><img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
+                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO"></div>';
                             posicion++;
                         }else{
                             texto += '<p></p>';
@@ -256,6 +254,7 @@ function cargarTablero(numJugadores){
             $('main').html(texto);
             $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
             girarCarta();
+            comenzarJuego(numJugadores);
         })
         
     })
