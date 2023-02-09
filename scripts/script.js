@@ -4,6 +4,7 @@ $(function() {
         "<header></header>" +
         "<main><div id='titulo'>LABERINTO</div> "+
         "<div id='comenzar' tabindex='0' role='link'>Comenzar!</div></main>" +
+        "<div class='panel'><div class='ventana'></div></div>"+
         "<footer></footer>"
     );  
     $('#comenzar').addClass('rainbow-button');   
@@ -23,6 +24,7 @@ function cargarEstructura(){
             '<h2 id="marcador" tabindex="0" role="link">Marcador</h2>'+
         '</nav>'
     );
+    $('footer').html('');
     $(document).on('click', '#jugar', function(){
         seleccionPartida();
     });  
@@ -43,6 +45,7 @@ function cargarEstructura(){
 
 function seleccionPartida(){
     document.title = "Laberinto | Partida";
+    $('footer').html('');
     $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
     $('#jugar').addClass('paginaAct');
     $('main').html(
@@ -123,8 +126,36 @@ function crearPartida(numJugadores){
     for (let i = 0; i < numJugadores; i++) {
         texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +' : <input><button onclick="elegirJugador(\'jugador_'+ (i+1) +'\');">Elegir jugador</button></div>'; 
     }
-    texto += '<div class="rainbow-button" onclick="cargarTablero('+ numJugadores+');">Empezar partida</div>';
+    texto += '<div class="rainbow-button otro" onclick="verificarDatos('+ numJugadores+');">Empezar partida</div>';
     $('main').html(texto);
+}
+
+function verificarDatos(numJugadores){
+    $.getJSON('servidor/cargarUsuarios.php', function(datos){
+        valido = true;
+        for (let i = 0; i < numJugadores; i++) {
+            if($('#jugador_'+ (i+1) + ' input').val()==""){
+                valido = false;
+                $('#jugador_'+ (i+1) + ' input').addClass('rojo');
+            }
+            $.each(datos,function(){
+                if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+                    valido = false;
+                    $('#jugador_'+ (i+1) + ' input').addClass('rojo');
+                }
+            })
+            
+        }
+        if(valido){
+            for (let i = 0; i < numJugadores; i++) {
+                $.post('servidor/crearUsuario.php', {nombre: $('#jugador_'+ (i+1) + ' input').val(), puntos:0}, function(){
+                    
+                })
+            }
+            cargarTablero(numJugadores)  
+        }
+    })
+    
 }
 
 //Se puede reutilizar para cada modo de juego
@@ -143,76 +174,26 @@ function elegirJugador(jugador){
     })
 }
 
-// function cargarTablero(numJugadores){
-//     tamanhoTablero = 49;
-//     lado = 9;
-//     let cabecera = '<img id="equis" src="./imagenes/equis.png"><div id="jugadores">';
-//     for (let k = 0; k < numJugadores; k++) {
-//         cabecera += '<div id="jugador">'+
-//             '<div>Nombre</div>' +
-//             '<div>Puntuacion</div>'+
-//         '</div><dialog id="ventana"></dialog>';
-//     }
-//     cabecera += '</div>';
-//     $('header').html(cabecera);
-//     $("#equis").on('click', function(){
-//         $('#ventana').html(cargarVentana('cerrar'));
-//         $("#ventana").show();
-//     })
-
-
-//     texto ='<div id="tablero">';
-//     for (let i = 0; i < lado; i++) {
-//         texto += '<div class="columna">';
-//         for (let j = 0; j < lado; j++) {
-//             if(i==0){
-//                 if(j%2==0 && j>0 && j<lado-1) texto+= '<img src="imagenes/flecha-abajo.png">';
-//                 else texto+= "<p></p>";
-//             }else if(j==0){
-//                 if(i%2==0 && i>0 && i<lado-1)texto+= '<img src="imagenes/flecha-derecha.png">';
-//                 else texto+= "<p></p>";
-//             }else if(j==lado-1){
-//                 if(i%2==0 && i>0 && i<lado-1)texto+= '<img src="imagenes/flecha-izquierda.png">';
-//                 else texto+= "<p></p>";
-//             }else if(i==lado-1){
-//                 if(j%2==0 && j>0 && j<lado-1) texto+= '<img src="imagenes/flecha-arriba.png">';
-//                 else texto+= "<p></p>";
-//             }else{
-//                 let ladi = Math.floor(Math.random() * 3);
-//                 let imagen ='';
-//                 if(ladi==0) imagen = 'imagenes/curva.png';
-//                 else if(ladi == 1) imagen = 'imagenes/recto.png';
-//                 else imagen = 'imagenes/tres.png';
-//                 texto += '<img id="carta" data-lado="' + ladi + '" src="'+ imagen+'">';
-//             }
-//         }
-//         texto += "</div>";
-            
-//     }
-//     texto += "</div>";
-//     $('main').html(texto);
-//     $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
-
-// }
-
 function cargarTablero(numJugadores){
     tamanhoTablero = 49;
     lado = 9;
     let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
                     '<div id="jugadores">';
     for (let k = 0; k < numJugadores; k++) {
-        cabecera += '<div id="jugador">'+
-            '<div>Nombre</div>' +
-            '<div>Puntuacion</div>'+
-        '</div><dialog id="ventana"></dialog>';
+        cabecera += '<div class="jugador">'+
+            '<div>'+ $('#jugador_'+ (k+1) + ' input').val() +'</div>' +
+            '<div>0</div>'+
+        '</div>';
     }
-    cabecera += '</div>';
+    cabecera += '<dialog id="ventana"></dialog></div>';
     $('header').html(cabecera);
     $("#equis").on('click', function(){
         $('#ventana').html(cargarVentana('cerrar'));
+        $('.panel').show();
         $("#ventana").show();
     })
     $("#reglas").on('click', function(){
+        $('.panel').show();
         $('#ventana').html(cargarVentana('reglas'));
         $("#ventana").show();
     })
@@ -222,7 +203,7 @@ function cargarTablero(numJugadores){
         $.getJSON('servidor/cargarCartas.php', function(cartas){
             cartas = cartas.sort((a, b) => 0.5 - Math.random());
             posicion = 0;
-            console.log(cartas);
+            //console.log(cartas);
             for (let i = 0; i < lado; i++) {
                 texto += '<div class="fila">';         
                 for (let j = 0; j < lado; j++) {        
@@ -230,16 +211,19 @@ function cargarTablero(numJugadores){
                     $.each(cartasRes, function(){
                         if(this.fila==i && this.columna==j){
                             //console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
-                            texto += '<div><img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+'"></div>';
+                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+
+                            '" data-lado1="'+this.lado1+'" data-lado2="'+this.lado2+'" data-lado3="'+this.lado3+'">';
                             bandera = false;
                         }
                     })
                     if(bandera){
                         if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
                             carta = Object.values(cartas[posicion]);
-                            texto += '<div><img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
-                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO"></div>';
+                            console.log(carta)
+                            texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
+                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
                             posicion++;
+                            console.log(posicion)
                         }else{
                             texto += '<p></p>';
                         }
@@ -250,21 +234,37 @@ function cargarTablero(numJugadores){
                 texto += "</div>";
                 
             }
-            texto += "</div>";
+            carta = Object.values(cartas[posicion]);
+            texto += "</div>"+
+                    "<div id='botones'>"+
+                        "<button class='rainbow-button'>Mostrar carta</button>"+
+                        "<button class='rainbow-button'>Comprobar carta</button>"+
+                    "</div>";
             $('main').html(texto);
+            $('footer').html("<div id='carta_sobrante'><img src='imagenes/"+ carta[1]+"' data-lado1='"+carta[2]+
+            "' data-lado2='"+carta[3]+"' data-lado3='"+carta[4]+"'  data-reservada='NO'></div>");
+            $('#carta_sobrante img').draggable();
             $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
             girarCarta();
+            tablero = $('#tablero').width()
+            for (let i = 0; i < numJugadores; i++) {
+                $('#tablero').append('<div id="pieza_'+(i+1)+'" class="pieza" data-jugador="jugador_'+(i+1)+'">');
+                posicion = $('img[src*="jugador'+(i+1)+'"]').attr('id').split('_')
+                console.log(tablero*posicion[2]/9)
+                console.log('#pieza_'+(i+1))
+                $('#pieza_'+(i+1)).css({'left': 10+tablero*posicion[2]/9, 'top': 10+tablero*posicion[1]/9})
+                
+            }
+
+            //https://programandoointentandolo.com/2013/02/arrastrar-y-soltar-en-html5-drag-drop-html5.html
             comenzarJuego(numJugadores);
         })
         
     })
-
-}
-
-function cargarCartas(){
-    $.getJSON('servidor/cargarCartas.php', function(datos){
-        return datos;
+    $(document).on('click', '#insertar' ,function(){
+        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
+
 }
 
 function girarCarta(){
@@ -299,30 +299,3 @@ function girarCarta(){
     })
 
 }
-
-//Ventana de mensajes
-function cargarVentana(mensaje){
-    let texto='';
-    switch(mensaje){
-        case "cerrar":
-            texto= "<p>¿Desea salir de la partida?<br/>No se guardará el progreso</p>"+
-            "<button id='cancelar' onclick='cerrarVentana();'>Cancelar</button><button id='salir' onclick='salirPartida();'>Salir</button>";
-            break;
-        case "reglas":
-            texto = '<img id="equis" onclick="cerrarVentana();" src="./imagenes/equis.png">'
-            break;
-        default:
-    }
-     return texto;
-}
-
-function salirPartida(){
-    cargarEstructura();
-    seleccionPartida();
-}
-
-function cerrarVentana(){
-    $("#ventana").hide();
-}
-
-
