@@ -180,21 +180,21 @@ function cargarTablero(numJugadores){
     let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
                     '<div id="jugadores">';
     for (let k = 0; k < numJugadores; k++) {
-        cabecera += '<div class="jugador">'+
+        cabecera += '<div class="jugador" id="jugador'+(k+1)+'">'+
             '<div>'+ $('#jugador_'+ (k+1) + ' input').val() +'</div>' +
-            '<div>0</div>'+
+            '<div>100</div>'+
         '</div>';
     }
     cabecera += '<dialog id="ventana"></dialog></div>';
     $('header').html(cabecera);
     $("#equis").on('click', function(){
-        $('#ventana').html(cargarVentana('cerrar'));
+        $('#ventana').html(cargarVentana('cerrar',numJugadores));
         $('.panel').show();
         $("#ventana").show();
     })
     $("#reglas").on('click', function(){
         $('.panel').show();
-        $('#ventana').html(cargarVentana('reglas'));
+        $('#ventana').html(cargarVentana('reglas',numJugadores));
         $("#ventana").show();
     })
 
@@ -250,10 +250,9 @@ function cargarTablero(numJugadores){
             for (let i = 0; i < numJugadores; i++) {
                 $('#tablero').append('<div id="pieza_'+(i+1)+'" class="pieza" data-jugador="jugador_'+(i+1)+'">');
                 posicion = $('img[src*="jugador'+(i+1)+'"]').attr('id').split('_')
-                console.log(tablero*posicion[2]/9)
+                console.log(tablero)
                 console.log('#pieza_'+(i+1))
                 $('#pieza_'+(i+1)).css({'left': 10+tablero*posicion[2]/9, 'top': 10+tablero*posicion[1]/9})
-                
             }
 
             //https://programandoointentandolo.com/2013/02/arrastrar-y-soltar-en-html5-drag-drop-html5.html
