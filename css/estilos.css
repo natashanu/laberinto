@@ -317,3 +317,29 @@ dialog button{
 #salir:hover{
     background-color: rgb(216, 40, 40);
 }
+
+
+#jugador1.turnoAct{
+    padding: 5px;
+    border:  rgb(235, 84, 240)  solid 4px;
+}
+
+#jugador2.turnoAct{
+    padding: 5px;
+    border:  rgb(166, 248, 146)  solid 4px;
+}
+#jugador3.turnoAct{
+    padding: 5px;
+    border:  rgb(221, 186, 69)  solid 4px;
+}
+#jugador4.turnoAct{
+    padding: 5px;
+    border: rgb(147, 202, 247)  solid 4px;
+}
+
+.draggable{
+
+}
+.droppable{
+
+}

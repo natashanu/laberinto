@@ -1,5 +1,16 @@
-function comenzarJuego(numJugadores){       
- 
+function dibujarJugadores(numJugadores){
+    tablero = $('#tablero').width()
+    for (let i = 0; i < numJugadores; i++) {
+        $('#tablero').append('<div id="pieza_'+(i+1)+'" class="pieza" data-jugador="jugador_'+(i+1)+'">');
+        posicion = $('img[src*="jugador'+(i+1)+'"]').attr('id').split('_')
+        console.log(tablero)
+        console.log('#pieza_'+(i+1))
+        $('#pieza_'+(i+1)).css({'left': 10+tablero*posicion[2]/9, 'top': 10+tablero*posicion[1]/9})
+        .attr('data-fila', posicion[1])
+        .attr('data-columna', posicion[2])
+
+    }
+    //https://programandoointentandolo.com/2013/02/arrastrar-y-soltar-en-html5-drag-drop-html5.html
 }
 
 //Ventana de mensajes
@@ -34,6 +45,24 @@ function salirPartida(numJugadores){
 
 }
 
+
 function cerrarVentana(){
     $("#ventana").hide();
+}
+
+function cargarSonido(sonidoRequerido) {
+    console.log(sonidoRequerido)
+    var sonidos = new Array("campana", "creacion");
+    const sonido = document.createElement("audio");
+    for (let i = 0; i < sonidos.length; i++) {
+        if (sonidos[i] == sonidoRequerido) {
+            sonido.src = "./sonidos/" + sonidos[i] + ".mp3";
+        }
+    }
+    sonido.setAttribute("preload", "auto");
+    sonido.setAttribute("controls", "none");
+    sonido.setAttribute('autoplay',true)
+    sonido.style.display = "none"; // <-- oculto
+    document.body.appendChild(sonido);
+    return sonido;
 }

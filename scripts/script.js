@@ -114,7 +114,7 @@ function cargarUsuarios(){
     })  
 }
 
-/**/
+/*En esta función se elije el nombre de los jugadores de la partida*/
 function crearPartida(numJugadores){
     document.title = "Laberinto | Partida " + numJugadores + " jugadores";
     $('header').html('<img id="volver" src="imagenes/flecha.png" width="50px" title="Volver">');
@@ -130,6 +130,7 @@ function crearPartida(numJugadores){
     $('main').html(texto);
 }
 
+/*Función que verifica que los datos introducidos en el input no son de un usuario existente o un usuario invalido (cadena vacía)*/
 function verificarDatos(numJugadores){
     $.getJSON('servidor/cargarUsuarios.php', function(datos){
         valido = true;
@@ -137,11 +138,15 @@ function verificarDatos(numJugadores){
             if($('#jugador_'+ (i+1) + ' input').val()==""){
                 valido = false;
                 $('#jugador_'+ (i+1) + ' input').addClass('rojo');
+            }else if($('#jugador_'+ (i+1) + ' input').val()!=""){
+                $('#jugador_'+ (i+1) + ' input').removeClass('rojo');
             }
             $.each(datos,function(){
                 if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
                     valido = false;
                     $('#jugador_'+ (i+1) + ' input').addClass('rojo');
+                }else if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+                    $('#jugador_'+ (i+1) + ' input').removeClass('rojo');
                 }
             })
             
@@ -175,6 +180,7 @@ function elegirJugador(jugador){
 }
 
 function cargarTablero(numJugadores){
+    cargarSonido('creacion');
     tamanhoTablero = 49;
     lado = 9;
     let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
@@ -239,24 +245,29 @@ function cargarTablero(numJugadores){
                     "<div id='botones'>"+
                         "<button class='rainbow-button'>Mostrar carta</button>"+
                         "<button class='rainbow-button'>Comprobar carta</button>"+
+                        "<button id='saltar' class='rainbow-button'>Saltar turno</button>"+
                     "</div>";
             $('main').html(texto);
             $('footer').html("<div id='carta_sobrante'><img src='imagenes/"+ carta[1]+"' data-lado1='"+carta[2]+
             "' data-lado2='"+carta[3]+"' data-lado3='"+carta[4]+"'  data-reservada='NO'></div>");
-            $('#carta_sobrante img').draggable();
-            $('img[src*=flecha]').css({'width': '30px', 'margin' : 'auto'})
-            girarCarta();
-            tablero = $('#tablero').width()
-            for (let i = 0; i < numJugadores; i++) {
-                $('#tablero').append('<div id="pieza_'+(i+1)+'" class="pieza" data-jugador="jugador_'+(i+1)+'">');
-                posicion = $('img[src*="jugador'+(i+1)+'"]').attr('id').split('_')
-                console.log(tablero)
-                console.log('#pieza_'+(i+1))
-                $('#pieza_'+(i+1)).css({'left': 10+tablero*posicion[2]/9, 'top': 10+tablero*posicion[1]/9})
-            }
+            $('#carta_sobrante img').addClass('draggable').draggable({
+                containment: '#contenedor',
+                revert: 'invalid',
+               
+        });
+            $('img[src*="flecha"]').addClass('droppable').droppable({
+                drop: function( event, ui ) {
+                    ui.draggable.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()});
+                 }
+             });
 
-            //https://programandoointentandolo.com/2013/02/arrastrar-y-soltar-en-html5-drag-drop-html5.html
-            comenzarJuego(numJugadores);
+            $('img[src*="flecha"]').css({'width': '30px', 'margin' : 'auto'})
+
+            girarCartas();
+            dibujarJugadores(numJugadores);
+            jugadorActivo= Math.floor(Math.random() * numJugadores);   
+            repartirTurnos(numJugadores);
+            
         })
         
     })
@@ -264,9 +275,20 @@ function cargarTablero(numJugadores){
         // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
+
+    $(document).on('click', '#saltar' ,function(){
+        saltarTurno(numJugadores)
+        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
+    })
+
+    $(document).on('click', '[id*="carta_"]' ,function(){
+        moverPieza();
+        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
+    })
+
 }
 
-function girarCarta(){
+function girarCartas(){
     $('img[data-reservada="NO"]').each(function(){
         let giros = Math.floor(Math.random() * (4-1)+1);
         for (let i = 0; i < giros; i++) {
@@ -298,3 +320,28 @@ function girarCarta(){
     })
 
 }
+
+    function repartirTurnos(numJugadores){  
+        //Empezamos a jugar
+        // for (jugadorActivo; jugadorActivo < numJugadores; jugadorActivo++) {
+            $('[id*=jugador]').removeClass('turnoAct')
+            $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
+
+            
+        // }
+
+        // repartirTurnos(numJugadores, 0)
+
+    }
+
+    function saltarTurno(numJugador){
+        jugadorActivo = (jugadorActivo==numJugador-1)? 0 : jugadorActivo+1;
+        console.log(jugadorActivo);
+        repartirTurnos(numJugador);
+    }
+
+    function moverPieza(){
+        pieza = $('#pieza_'+(jugadorActivo+1));
+        //Primero verificamos 
+    }
+

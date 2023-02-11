@@ -5,7 +5,7 @@
 	// Seleccionamos los usuarios dados de alta
    	$consulta = "SELECT * 
 				FROM usuario
-			    ORDER BY puntos";
+			    ORDER BY puntos desc";
 
 	$salida = array();
 	if ($datos = $conexion->query($consulta))
