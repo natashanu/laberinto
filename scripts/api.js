@@ -13,6 +13,7 @@ function dibujarJugadores(numJugadores){
     //https://programandoointentandolo.com/2013/02/arrastrar-y-soltar-en-html5-drag-drop-html5.html
 }
 
+
 //Ventana de mensajes
 function cargarVentana(mensaje, numJugadores){
     let texto='';

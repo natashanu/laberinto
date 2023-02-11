@@ -282,7 +282,8 @@ function cargarTablero(numJugadores){
     })
 
     $(document).on('click', '[id*="carta_"]' ,function(){
-        moverPieza();
+        let posicion = $(this).attr('id').split('_')
+        moverPieza(posicion[1],posicion[2]);
         // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
@@ -340,8 +341,75 @@ function girarCartas(){
         repartirTurnos(numJugador);
     }
 
-    function moverPieza(){
-        pieza = $('#pieza_'+(jugadorActivo+1));
-        //Primero verificamos 
+    //Función que mueve la pieza del jugador
+    //Recibe de parametro las coordenadas (x,y) de la carta a la que se quiere mover
+    function moverPieza(i,j){
+        console.log("fila" + i + " columna" + j)
+        i = parseFloat(i);
+        j = parseFloat(j);
+        console.log("juagdor " +(jugadorActivo+1))
+        let fila = parseInt($('#pieza_'+(jugadorActivo+1)).attr('data-fila'))
+        let columna = parseInt($('#pieza_'+(jugadorActivo+1)).attr('data-columna'))
+        //Primero verificamos la contiguidad
+        //Verificamos si se quiere mover en fila
+        if((fila+1)==i && columna==j){ //Se va a mover hacia abajo
+            alert('//Se va a mover hacia abajo')
+            movimiento(fila,columna,i,j ,'bajar');
+        }else if((fila-1)==i  && columna==j){//Se va a mover hacia arriba
+            alert('//Se va a mover hacia arriba')
+            movimiento(fila,columna,i,j ,'subir');
+        //Verificamos si se quiere mover en columna
+        }else if((columna+1)==j  && fila==i){//Se va a mover a la derecha
+            alert('//Se va a mover a la derecha')
+            movimiento(fila,columna,i,j ,'derecha');
+        }else if((columna-1)==j  && fila==i){//Se va a mover a la izquierda
+            alert('//Se va a mover a la izquierda')
+            movimiento(fila,columna,i,j ,'izquierda');
+        }else{
+            alert('No se puede mover a la pieza seleccionada')
+        }
+    }
+
+    //Recibe las coordenadas de la ubicación de la pieza, la ubicación de la carta a moverse, y el movimiento a realizar
+    function movimiento(pieza_i,pieza_j, i, j, direccion){
+        let lado1 = ''; //direccion que debe tener la carta donde esta posicionada la pieza
+        let lado2 = ''; //direccion que debe tener la carta a la que quiere posicionarse
+        let carta1 = $('#carta_'+ pieza_i + '_' + pieza_j);
+        let carta2 = $('#carta_'+ i + '_' + j);
+        switch(direccion){
+            case 'bajar':
+                lado1= 'abajo'
+                lado2= 'arriba'
+                break;
+            case 'subir':
+                lado1= 'arriba'
+                lado2= 'abajo'
+                break;
+            case 'derecha':
+                lado1= 'derecha'
+                lado2= 'izquierda'
+                break;
+            case 'izquierda':
+                lado1= 'izquierda'
+                lado2= 'derecha'
+                break;
+            default:
+        }
+        let bandera1 = false;
+        let bandera2 = false;
+        for (let k = 0; k < 3; k++) {
+            if(carta1.data('lado'+(k+1))==lado1) bandera1=true;        
+        }
+        for (let k = 0; k < 3; k++) {
+            if(carta2.data('lado'+(k+1))==lado2) bandera2=true;        
+        }
+        console.log(bandera1 +" "+ bandera2)
+        if(bandera1==true && bandera2==true){
+            $('#pieza_'+(jugadorActivo+1))
+            .attr('data-fila', i)
+            .attr('data-columna', j)
+            $('#pieza_'+(jugadorActivo+1)).css({'left': 10+tablero*j/9, 'top': 10+tablero*i/9})
+        }else alert('No se puede mover a la pieza seleccionada')
+
     }
 
