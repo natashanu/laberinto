@@ -258,6 +258,9 @@ function cargarTablero(numJugadores){
             $('img[src*="flecha"]').addClass('droppable').droppable({
                 drop: function( event, ui ) {
                     ui.draggable.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()});
+                    let direccion = $(this).attr('src').split('/');
+                    let posicion = $(this).attr('id').split('_');
+                    moverPiezaTablero(direccion[2], posicion[1], posicion[2]);
                  }
              });
 
@@ -266,24 +269,23 @@ function cargarTablero(numJugadores){
             girarCartas();
             dibujarJugadores(numJugadores);
             jugadorActivo= Math.floor(Math.random() * numJugadores);   
-            repartirTurnos(numJugadores);
+            saltarTurno(numJugadores)
             
         })
         
     })
     $(document).on('click', '#insertar' ,function(){
-        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
+
     })
 
 
     $(document).on('click', '#saltar' ,function(){
         saltarTurno(numJugadores)
-        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
     $(document).on('click', '[id*="carta_"]' ,function(){
         let posicion = $(this).attr('id').split('_')
-        moverPieza(posicion[1],posicion[2]);
+        moverPiezaJugador(posicion[1],posicion[2]);
         // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
@@ -322,28 +324,18 @@ function girarCartas(){
 
 }
 
-    function repartirTurnos(numJugadores){  
-        //Empezamos a jugar
-        // for (jugadorActivo; jugadorActivo < numJugadores; jugadorActivo++) {
-            $('[id*=jugador]').removeClass('turnoAct')
-            $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
-
-            
-        // }
-
-        // repartirTurnos(numJugadores, 0)
-
-    }
-
     function saltarTurno(numJugador){
+        cargarSonido('plop');
         jugadorActivo = (jugadorActivo==numJugador-1)? 0 : jugadorActivo+1;
         console.log(jugadorActivo);
-        repartirTurnos(numJugador);
+        $('[id*=jugador]').removeClass('turnoAct')
+        $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
+
     }
 
     //Función que mueve la pieza del jugador
     //Recibe de parametro las coordenadas (x,y) de la carta a la que se quiere mover
-    function moverPieza(i,j){
+    function moverPiezaJugador(i,j){
         console.log("fila" + i + " columna" + j)
         i = parseFloat(i);
         j = parseFloat(j);
@@ -353,17 +345,13 @@ function girarCartas(){
         //Primero verificamos la contiguidad
         //Verificamos si se quiere mover en fila
         if((fila+1)==i && columna==j){ //Se va a mover hacia abajo
-            alert('//Se va a mover hacia abajo')
             movimiento(fila,columna,i,j ,'bajar');
         }else if((fila-1)==i  && columna==j){//Se va a mover hacia arriba
-            alert('//Se va a mover hacia arriba')
             movimiento(fila,columna,i,j ,'subir');
         //Verificamos si se quiere mover en columna
         }else if((columna+1)==j  && fila==i){//Se va a mover a la derecha
-            alert('//Se va a mover a la derecha')
             movimiento(fila,columna,i,j ,'derecha');
         }else if((columna-1)==j  && fila==i){//Se va a mover a la izquierda
-            alert('//Se va a mover a la izquierda')
             movimiento(fila,columna,i,j ,'izquierda');
         }else{
             alert('No se puede mover a la pieza seleccionada')
@@ -411,5 +399,47 @@ function girarCartas(){
             $('#pieza_'+(jugadorActivo+1)).css({'left': 10+tablero*j/9, 'top': 10+tablero*i/9})
         }else alert('No se puede mover a la pieza seleccionada')
 
+    }
+
+    function moverPiezaTablero(direccion, fila, columna){
+        console.log(direccion)   
+        console.log(fila)
+        console.log(columna)
+        if(direccion == "flecha-abajo.png"){
+           //Se mueven las cartas del 1 al 7
+           ultimaCarta = $('#carta_'+ 7 +"_"+columna);
+           console.log(ultimaCarta)
+            for (let i = 6; i > 0; i--) {
+                debugger;
+                let carta = $('#carta_'+ i +"_"+columna);
+                console.log(carta.attr('style'));
+                console.log(carta.attr('src'))
+                $('#carta_'+ (i+1) +"_"+columna).attr('src',carta.attr('src'))
+                .attr('data-lado1', carta.attr('data-lado1'))
+                .attr('data-lado2', carta.attr('data-lado2'))
+                .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('style', carta.attr('style'))
+                console.log($('#carta_'+ (i+1) +"_"+columna).attr('src'))
+            }
+            console.log($('.draggable').attr('style'))
+            $('#carta_'+ 1 +"_"+columna)
+            .attr('src', $('.draggable').attr('src'))
+            .attr('data-lado1', $('.draggable').attr('data-lado1'))
+            .attr('data-lado2',$('.draggable').attr('data-lado2'))
+            .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            $('.draggable').remove();
+        }
+        $('#carta_sobrante').html('<img src="'+ultimaCarta.attr('src') +'">')
+        $('#carta_sobrante img')
+        .attr('data-lado1', ultimaCarta.attr('data-lado1'))
+        .attr('data-lado2', ultimaCarta.attr('data-lado2'))
+        .attr('data-lado3', ultimaCarta.attr('data-lado3'))
+        .attr('style', ultimaCarta.attr('style'))
+        $('#carta_sobrante img').addClass('draggable').draggable({
+            containment: '#contenedor',
+            revert: 'invalid',
+           
+        });
+    
     }
 

@@ -53,7 +53,7 @@ function cerrarVentana(){
 
 function cargarSonido(sonidoRequerido) {
     console.log(sonidoRequerido)
-    var sonidos = new Array("campana", "creacion");
+    var sonidos = new Array("campana", "creacion","plop");
     const sonido = document.createElement("audio");
     for (let i = 0; i < sonidos.length; i++) {
         if (sonidos[i] == sonidoRequerido) {
