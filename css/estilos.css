@@ -73,6 +73,11 @@ a{
     margin: 0px 10px 10px;
 }
 
+footer{
+    position:relative;
+}
+
+
 #carta_sobrante{
     display: flex;
     justify-content: center;
