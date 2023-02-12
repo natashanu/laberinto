@@ -7,7 +7,7 @@ use laberinto;
 
 -- Creación de la tabla usuario
 create table if not exists usuario(
-idUsuario tinyint auto_increment,
+idUsuario int auto_increment,
 nombre varchar(25) not null,
 puntos int,
 	constraint pk_usuario primary key (idUsuario)

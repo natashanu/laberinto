@@ -340,6 +340,7 @@ dialog button{
 .draggable{
 
 }
-.droppable{
-
+.droppable:hover .draggable{
+    width: 30px;
+    border: pink solid 2px;
 }

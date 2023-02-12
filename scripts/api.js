@@ -3,8 +3,6 @@ function dibujarJugadores(numJugadores){
     for (let i = 0; i < numJugadores; i++) {
         $('#tablero').append('<div id="pieza_'+(i+1)+'" class="pieza" data-jugador="jugador_'+(i+1)+'">');
         posicion = $('img[src*="jugador'+(i+1)+'"]').attr('id').split('_')
-        console.log(tablero)
-        console.log('#pieza_'+(i+1))
         $('#pieza_'+(i+1)).css({'left': 10+tablero*posicion[2]/9, 'top': 10+tablero*posicion[1]/9})
         .attr('data-fila', posicion[1])
         .attr('data-columna', posicion[2])
@@ -52,7 +50,6 @@ function cerrarVentana(){
 }
 
 function cargarSonido(sonidoRequerido) {
-    console.log(sonidoRequerido)
     var sonidos = new Array("campana", "creacion","plop");
     const sonido = document.createElement("audio");
     for (let i = 0; i < sonidos.length; i++) {
