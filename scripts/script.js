@@ -1,3 +1,4 @@
+var num_jugadores = 0;
 $(function() {
     //Cuando inicia el juego
     $('#contenedor').html(
@@ -11,12 +12,14 @@ $(function() {
       
     $(document).on('click', '#comenzar', function(){
         cargarEstructura();
-        seleccionPartida();
+        //seleccionPartida();
     })
 });
 
 //Función que carga la sección principal del juego
 function cargarEstructura(){
+    num_jugadores = 0
+    document.title = "Laberinto | Partida";
     $('header').html(
         '<nav>'+
             '<h2 id="jugar" tabindex="0" role="link">Jugar</h2>'+
@@ -24,9 +27,31 @@ function cargarEstructura(){
             '<h2 id="marcador" tabindex="0" role="link">Marcador</h2>'+
         '</nav>'
     );
+    $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
+    $('#jugar').addClass('paginaAct');
+    $('main').html(
+        '<h2>Crear partida</h2>'+
+        '<div id="jugadores2" tabindex="0">2 jugadores</div>'+
+        '<div id="jugadores3" tabindex="0">3 jugadores</div>'+
+        '<div id="jugadores4" tabindex="0">4 jugadores</div>'
+    );
+    $('main div').addClass('rainbow-button');
     $('footer').html('');
+    $(document).on('click', '#jugadores2', function(){
+        num_jugadores = 2;
+        crearPartida();
+    })
+    $(document).on('click', '#jugadores3', function(){
+        num_jugadores = 3
+        crearPartida();
+    })
+    $(document).on('click', '#jugadores4', function(){
+        num_jugadores = 4
+        crearPartida();
+    })
+
     $(document).on('click', '#jugar', function(){
-        seleccionPartida();
+        cargarEstructura();
     });  
     $(document).on('click', '#instrucciones', function(){
         cargarInstrucciones();
@@ -41,29 +66,6 @@ function cargarEstructura(){
           $( this ).css('text-decoration', 'none');
         }
     );
-}
-
-function seleccionPartida(){
-    document.title = "Laberinto | Partida";
-    $('footer').html('');
-    $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
-    $('#jugar').addClass('paginaAct');
-    $('main').html(
-        '<h2>Crear partida</h2>'+
-        '<div id="jugadores2" tabindex="0">2 jugadores</div>'+
-        '<div id="jugadores3" tabindex="0">3 jugadores</div>'+
-        '<div id="jugadores4" tabindex="0">4 jugadores</div>'
-    );
-    $('main div').addClass('rainbow-button');
-    $(document).on('click', '#jugadores2', function(){
-        crearPartida(2);
-    })
-    $(document).on('click', '#jugadores3', function(){
-        crearPartida(3);
-    })
-    $(document).on('click', '#jugadores4', function(){
-        crearPartida(4);
-    })
 }
 
 function cargarInstrucciones(){
@@ -107,34 +109,27 @@ function cargarMarcador(){
 
 }
 
-/*Separamos cargar usuarios para llamarlo en varios sitios*/
-function cargarUsuarios(){
-    $.getJSON('servidor/cargarUsuarios.php', function(datos){
-        return datos;
-    })  
-}
-
 /*En esta función se elije el nombre de los jugadores de la partida*/
-function crearPartida(numJugadores){
-    document.title = "Laberinto | Partida " + numJugadores + " jugadores";
+function crearPartida(){
+    document.title = "Laberinto | Partida " + num_jugadores + " jugadores";
     $('header').html('<img id="volver" src="imagenes/flecha.png" width="50px" title="Volver">');
     $(document).on('click', '#volver', function(){
         cargarEstructura();
         seleccionPartida();
     });
-    let texto = "<h2>Partida de " + numJugadores+ " jugadores</h2>";
-    for (let i = 0; i < numJugadores; i++) {
+    let texto = "<h2>Partida de " + num_jugadores+ " jugadores</h2>";
+    for (let i = 0; i < num_jugadores; i++) {
         texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +' : <input><button onclick="elegirJugador(\'jugador_'+ (i+1) +'\');">Elegir jugador</button></div>'; 
     }
-    texto += '<div class="rainbow-button otro" onclick="verificarDatos('+ numJugadores+');">Empezar partida</div>';
+    texto += '<div class="rainbow-button otro" onclick="verificarDatos();">Empezar partida</div>';
     $('main').html(texto);
 }
 
 /*Función que verifica que los datos introducidos en el input no son de un usuario existente o un usuario invalido (cadena vacía)*/
-function verificarDatos(numJugadores){
+function verificarDatos(){
     $.getJSON('servidor/cargarUsuarios.php', function(datos){
         valido = true;
-        for (let i = 0; i < numJugadores; i++) {
+        for (let i = 0; i < num_jugadores; i++) {
             if($('#jugador_'+ (i+1) + ' input').val()==""){
                 valido = false;
                 $('#jugador_'+ (i+1) + ' input').addClass('rojo');
@@ -152,12 +147,12 @@ function verificarDatos(numJugadores){
             
         }
         if(valido){
-            for (let i = 0; i < numJugadores; i++) {
+            for (let i = 0; i < num_jugadores; i++) {
                 $.post('servidor/crearUsuario.php', {nombre: $('#jugador_'+ (i+1) + ' input').val(), puntos:0}, function(){
                     
                 })
             }
-            cargarTablero(numJugadores)  
+            cargarTablero()  
         }
     })
     
@@ -168,24 +163,28 @@ function verificarDatos(numJugadores){
 function elegirJugador(jugador){
     console.log(jugador)
     $.getJSON('servidor/cargarUsuarios.php', function(datos){
-        let texto = '<select>'+
+        let numJugador= jugador.split('_')
+        let texto = '<select id="select_'+numJugador[1]+'">'+
             '<option value="0">Selecciona un jugador</option>'
         $.each(datos,function(){
             texto += '<option value="'+this.idUsuario+'">'+ this.nombre+'</option>';
         })
+
         texto+= '</select>';
-        let numJugador= jugador.split('_')
         $('#' + jugador).html("Jugador " + numJugador[1] +" :" + texto);
+        $('#select_'+numJugador[1]).on('change', function(){
+            
+        })
     })
 }
 
-function cargarTablero(numJugadores){
+function cargarTablero(){
     cargarSonido('creacion');
     tamanhoTablero = 49;
     lado = 9;
     let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
                     '<div id="jugadores">';
-    for (let k = 0; k < numJugadores; k++) {
+    for (let k = 0; k < num_jugadores; k++) {
         cabecera += '<div class="jugador" id="jugador'+(k+1)+'">'+
             '<div>'+ $('#jugador_'+ (k+1) + ' input').val() +'</div>' +
             '<div>100</div>'+
@@ -194,13 +193,13 @@ function cargarTablero(numJugadores){
     cabecera += '<dialog id="ventana"></dialog></div>';
     $('header').html(cabecera);
     $("#equis").on('click', function(){
-        $('#ventana').html(cargarVentana('cerrar',numJugadores));
+        $('#ventana').html(cargarVentana('cerrar',num_jugadores));
         $('.panel').show();
         $("#ventana").show();
     })
     $("#reglas").on('click', function(){
         $('.panel').show();
-        $('#ventana').html(cargarVentana('reglas',numJugadores));
+        $('#ventana').html(cargarVentana('reglas',num_jugadores));
         $("#ventana").show();
     })
 
@@ -253,6 +252,10 @@ function cargarTablero(numJugadores){
             $('#carta_sobrante img').addClass('draggable').draggable({
                 containment: '#contenedor',
                 revert: 'invalid',
+                opacity: 0.50,
+                drag: function(event,ui){
+                    ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
+                }
                
         });
             $('img[src*="flecha"]').addClass('droppable').droppable({
@@ -267,9 +270,10 @@ function cargarTablero(numJugadores){
             $('img[src*="flecha"]').css({'width': '30px', 'margin' : 'auto'})
 
             girarCartas();
-            dibujarJugadores(numJugadores);
-            jugadorActivo= Math.floor(Math.random() * numJugadores);   
-            saltarTurno(numJugadores)
+            dibujarJugadores(num_jugadores);
+            jugadorActivo= Math.floor(Math.random() * num_jugadores);   
+            console.log("contruccion jugador activo" + jugadorActivo)
+            marcarJugador();
             
         })
         
@@ -280,7 +284,7 @@ function cargarTablero(numJugadores){
 
 
     $(document).on('click', '#saltar' ,function(){
-        saltarTurno(numJugadores)
+        saltarTurno()
     })
 
     $(document).on('click', '[id*="carta_"]' ,function(){
@@ -325,12 +329,21 @@ function girarCartas(){
 
 }
 
-    function saltarTurno(numJugador){
-        cargarSonido('plop');
-        jugadorActivo = (jugadorActivo==numJugador-1)? 0 : jugadorActivo+1;
-        console.log(jugadorActivo);
+    function marcarJugador(){
         $('[id*=jugador]').removeClass('turnoAct')
         $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
+    }
+
+    veces_funcion=0;
+    function saltarTurno(){
+        debugger;
+        console.log("Num veces que entra " + veces_funcion)
+        cargarSonido('plop');
+        console.log("num jug" + num_jugadores);
+        console.log("juagdor act"+ jugadorActivo)
+        jugadorActivo = (jugadorActivo>=num_jugadores-1)? 0 : jugadorActivo+1;
+        marcarJugador();
+        veces_funcion++;
 
     }
 

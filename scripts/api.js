@@ -38,8 +38,9 @@ function salirPartida(numJugadores){
         
     }
     if(bandera.length == numJugadores){
-        cargarEstructura();
-        seleccionPartida();
+        // cargarEstructura();
+        // seleccionPartida();
+        location.reload();
     }
 
 }
@@ -164,6 +165,10 @@ function moverPiezaTablero(direccion, fila, columna){
     $('#carta_sobrante img').addClass('draggable').draggable({
         containment: '#contenedor',
         revert: 'invalid',
+        opacity: 0.50,
+        drag: function(event,ui){
+            ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
+        }
        
     }).css('transform', 'rotate('+$('#carta_sobrante img').data('grados')+'deg)');
     console.log($('.draggable'))
