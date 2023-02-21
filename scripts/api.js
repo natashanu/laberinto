@@ -68,21 +68,23 @@ function cargarSonido(sonidoRequerido) {
     sonido.setAttribute("preload", "auto");
     sonido.setAttribute("controls", "none");
     sonido.setAttribute('autoplay',true)
-    sonido.style.display = "none"; // <-- oculto
+    sonido.style.display = "none";
     document.body.appendChild(sonido);
     return sonido;
 }
 
 function moverPiezaTablero(direccion, fila, columna){
+    debugger;
     let mov_valido= true;
     texto ='';
     if(direccion == "flecha-abajo.png" || direccion == "flecha-arriba.png"){
-        $('[id*=pieza]').each(function(){
-            if($(this).data('columna')==columna) {mov_valido=false; texto= 'columna'}
+        $('[id*="pieza"]').each(function(){
+            if($(this).attr('data-columna')==columna) {mov_valido=false; texto= 'columna'}
         })
-    }else if(direccion == "flecha-derecha.png" || direccion == "flecha-izquierda.png"){
-        $('[id*=pieza]').each(function(){
-            if($(this).data('fila')==fila) {mov_valido=false; texto = 'fila'}
+    }
+    if(direccion == "flecha-derecha.png" || direccion == "flecha-izquierda.png"){
+        $('[id*="pieza"]').each(function(){
+            if($(this).attr('data-fila')==fila) {mov_valido=false; texto = 'fila'}
         })
     }
     if(mov_valido){
@@ -182,17 +184,29 @@ function moverPiezaTablero(direccion, fila, columna){
 
         $('#carta_sobrante').html(ultimaCarta)
         $('#carta_sobrante img').addClass('draggable').draggable({
+            disabled: true,
             containment: '#contenedor',
             revert: 'invalid',
             opacity: 0.50,
-            drag: function(event,ui){
+            cursorAt: {
+                top: $('img[data-reservada="NO"]').height()/2,
+                left: $('img[data-reservada="NO"]').width()
+              },
+            drag: function(event, ui) {
+                // Establece el nuevo ancho del elemento mientras se está arrastrando
                 ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
+            },
+              stop: function(event, ui) {
+                // Restaura el ancho original del elemento si se revierte el efecto
+                ui.helper.css({'top': '0', 'left' : '0', 'width': 'fit-content', 'height' : '15vh'})
             }
         
-        }).css('transform', 'rotate('+$('#carta_sobrante img').data('grados')+'deg)');
-        console.log($('.draggable'))
+        }).css({'transform': 'rotate('+$('#carta_sobrante img').attr('data-grados')+'deg)', 'opacity' : '0.50'});
+        return true;
+        
     }else{
         alert('No puede introducir la pieza en esta ' + texto )
+        return false;
     }
 
 }

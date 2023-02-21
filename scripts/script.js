@@ -130,14 +130,46 @@ function crearPartida(){
     $('main').html(texto);
     $('select').hide()
     $('select').on('change', function(){
-        jug_elegidos.push($('select').val());
+        let opcion_elegida = $(this).val();
+        console.log('opcion' + opcion_elegida)
         $('select option').each(function(){
-            for (let i = 0; i < jug_elegidos.length; i++) {
-                if($(this).val() == jug_elegidos[i]) $(this).hide()
-                
+            console.log('aqui tamos ' +$(this).val())
+            if($(this).val() == opcion_elegida){
+                $(this).hide();
+            }else{
+                $(this).show();
             }
         })
     })
+}
+
+//Se puede reutilizar para cada modo de juego
+//Sirve para elegir un jugador existente en la BD
+function elegirJugador(jugador){
+    let numJugador= jugador.split('_')
+    $('#jugador_'+ numJugador[1] + ' input').add('#jugador_'+ numJugador[1] + ' button').hide()
+    $.getJSON('servidor/cargarUsuarios.php', function(datos){
+        let texto = '<option value="0">Selecciona un jugador</option>'
+        $.each(datos,function(){
+            texto += '<option value="'+this.nombre+'">'+ this.nombre+'</option>';
+        })
+        //$('#' + jugador).html("Jugador " + numJugador[1] +" :" + texto);
+        $('#jugador_'+ numJugador[1] + ' select').html(texto)
+
+        $('select').each(function(){
+            let valor = $(this).val()
+            console.log('valor' + valor)
+            $('select option').each(function(){
+                if($(this).val() == valor){
+                    $(this).hide();
+                }
+            })
+
+        })
+        $('#jugador_'+ numJugador[1] + ' select').show()
+
+            
+    }) 
 }
 
 /*Función que verifica que los datos introducidos en el input no son de un usuario existente o un usuario invalido (cadena vacía)*/
@@ -181,34 +213,6 @@ function verificarDatos(){
             cargarTablero()  
         }
     })
-    
-}
-
-//Se puede reutilizar para cada modo de juego
-//Sirve para elegir un jugador existente en la BD
-jug_elegidos = new Array();
-function elegirJugador(jugador){
-    let numJugador= jugador.split('_')
-    $('#jugador_'+ numJugador[1] + ' input').add('#jugador_'+ numJugador[1] + ' button').hide()
-    console.log(jug_elegidos)
-    console.log(jugador)
-    $.getJSON('servidor/cargarUsuarios.php', function(datos){
-        let texto = '<option value="0">Selecciona un jugador</option>'
-        $.each(datos,function(){
-            texto += '<option value="'+this.nombre+'">'+ this.nombre+'</option>';
-        })
-        //$('#' + jugador).html("Jugador " + numJugador[1] +" :" + texto);
-        $('#jugador_'+ numJugador[1] + ' select').html(texto).show()
-
-        $('select option').each(function(){
-            for (let i = 0; i < jug_elegidos.length; i++) {
-                if($(this).val() == jug_elegidos[i]) $(this).hide()
-                
-            }
-        })
-            
-    })
-
     
 }
 
@@ -290,17 +294,28 @@ function cargarTablero(){
                 containment: '#contenedor',
                 revert: 'invalid',
                 opacity: 0.50,
-                drag: function(event,ui){
+                cursorAt: {
+                    top: $('img[data-reservada="NO"]').height()/2,
+                    left: $('img[data-reservada="NO"]').width()
+                  },
+                  drag: function(event, ui) {
+                    // Establece el nuevo ancho del elemento mientras se está arrastrando
                     ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
-                }
-               
+                  },
+                  stop: function(event, ui) {
+                    // Restaura el ancho original del elemento si se revierte el efecto
+                    ui.helper.css({'top': '0', 'left' : '0', 'width': 'fit-content', 'height' : '15vh'})
+                }             
         });
             $('img[src*="flecha"]').addClass('droppable').droppable({
+                tolerance: "touch",
                 drop: function( event, ui ) {
                     ui.draggable.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()});
                     let direccion = $(this).attr('src').split('/');
                     let posicion = $(this).attr('id').split('_');
-                    moverPiezaTablero(direccion[2], posicion[1], posicion[2]);
+                    if(!moverPiezaTablero(direccion[2], posicion[1], posicion[2])){
+                        $('#carta_sobrante img').css({'top': '0', 'left' : '0', 'width': 'fit-content', 'height' : '15vh'})
+                    }
                  }
              });
 
@@ -356,7 +371,7 @@ function girarCartas(){
                         break;
                     default:
                 }
-                console.log(this.id + ' lado' + j + " "+ lado);
+                //console.log(this.id + ' lado' + j + " "+ lado);
                 $(this).attr(pos, lado)
                 console.log($(this).attr(pos))
             }
@@ -373,16 +388,15 @@ function girarCartas(){
         $('#jugador'+(jugadorActivo+1) + ' :nth-child(1)').css({'animation': 'slidebg 3s linear infinite'})
     }
 
-    veces_funcion=0;
     function saltarTurno(){
-        debugger;
-        console.log("Num veces que entra " + veces_funcion)
         cargarSonido('plop');
-        console.log("num jug" + num_jugadores);
-        console.log("juagdor act"+ jugadorActivo)
         jugadorActivo = (jugadorActivo>=num_jugadores-1)? 0 : jugadorActivo+1;
+        $('#carta_sobrante img').draggable({
+            disabled: false
+        }).css({'opacity' : '1'});
+        
         marcarJugador();
-        veces_funcion++;
+
 
     }
 
@@ -439,10 +453,10 @@ function girarCartas(){
         let bandera1 = false;
         let bandera2 = false;
         for (let k = 0; k < 3; k++) {
-            if(carta1.data('lado'+(k+1))==lado1) bandera1=true;        
+            if(carta1.attr('data-lado'+(k+1))==lado1) bandera1=true;        
         }
         for (let k = 0; k < 3; k++) {
-            if(carta2.data('lado'+(k+1))==lado2) bandera2=true;        
+            if(carta2.attr('data-lado'+(k+1))==lado2) bandera2=true;        
         }
         console.log(bandera1 +" "+ bandera2)
         if(bandera1==true && bandera2==true){
