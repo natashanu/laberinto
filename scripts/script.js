@@ -12,7 +12,6 @@ $(function() {
       
     $(document).on('click', '#comenzar', function(){
         cargarEstructura();
-        //seleccionPartida();
     })
 });
 
@@ -139,9 +138,9 @@ function crearPartida(){
     $('[src*="cross"]').hide()
     $('select').on('change', function(){
         let opcion_elegida = $(this).val();
-        console.log('opcion' + opcion_elegida)
+        //console.log('opcion' + opcion_elegida)
         $('select option').each(function(){
-            console.log('aqui tamos ' +$(this).val())
+            //console.log('aqui tamos ' +$(this).val())
             if($(this).val() == opcion_elegida){
                 $(this).hide();
             }else{
