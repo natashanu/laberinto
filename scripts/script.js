@@ -76,7 +76,12 @@ function cargarInstrucciones(){
     $('#marcador, #jugar, #instrucciones').removeClass('paginaAct');
     $('#instrucciones').addClass('paginaAct');
     $('main').html(
-        '<div></div>'
+        '<div class="instrucciones">'+
+        'Por sorteo, se decide qué jugador empieza. Siguen, por turno, los siguientes en el sentido de las agujas del reloj. '+
+        'El jugador que empieza, levanta su primera carta del tesoro para verla y la vuelve a colocar del revés. '+
+        'La ilustración que figura en dicha carta le indica su primer objetivo. Para alcanzar ese objetivo, el jugador'+
+        ' ha de ir modificando la disposición de las calles del laberinto moviendo las cartas y avanzando su peón.'+
+        '</div>'
     );
 }
 
@@ -121,14 +126,17 @@ function crearPartida(){
     });
     let texto = "<h2>Partida de " + num_jugadores+ " jugadores</h2>";
     for (let i = 0; i < num_jugadores; i++) {
-        texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +' : <input>'+
+        texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +
+        ' : <input>'+
         '<button onclick="elegirJugador(\'jugador_'+ (i+1) +'\');">Elegir jugador</button>'+
-        '<select></select>'+
+        '<select></select><img src="imagenes/cross.png" width="15px">'+
         '</div>'; 
     }
     texto += '<div class="rainbow-button otro" onclick="verificarDatos();">Empezar partida</div>';
     $('main').html(texto);
+    $('[id*="jugador_"]').css({'margin': '2vh'})
     $('select').hide()
+    $('[src*="cross"]').hide()
     $('select').on('change', function(){
         let opcion_elegida = $(this).val();
         console.log('opcion' + opcion_elegida)
@@ -141,6 +149,16 @@ function crearPartida(){
             }
         })
     })
+        // $('select').each(function(){
+        //     let valor = $(this).val()
+        //     $('select option').each(function(){
+        //         if($(this).val() == valor){
+        //             $(this).hide();
+        //         }
+        //     })
+
+        // })
+
 }
 
 //Se puede reutilizar para cada modo de juego
@@ -167,6 +185,14 @@ function elegirJugador(jugador){
 
         })
         $('#jugador_'+ numJugador[1] + ' select').show()
+        $('#jugador_'+ numJugador[1] + ' [src*="cross"]').show()
+
+        $(document).on('click', '#jugador_'+ numJugador[1] + ' [src*="cross"]', function(){
+            $('#jugador_'+ numJugador[1] + ' [src*="cross"]').hide()
+            $('#jugador_'+ numJugador[1] + ' select').hide()
+            $('#jugador_'+ numJugador[1] + ' select').val('0')
+            $('#jugador_'+ numJugador[1] + ' input').add('#jugador_'+ numJugador[1] + ' button').show()
+        })
 
             
     }) 
@@ -220,7 +246,7 @@ function cargarTablero(){
     cargarSonido('creacion');
     tamanhoTablero = 49;
     lado = 9;
-    let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
+    let cabecera = '<img class="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
                     '<div id="jugadores">';
     personajes = personajes.sort((a, b) => 0.5 - Math.random());          
     for (let k = 0; k < num_jugadores; k++) {
@@ -233,7 +259,7 @@ function cargarTablero(){
     }
     cabecera += '<dialog id="ventana"></dialog></div>';
     $('header').html(cabecera);
-    $("#equis").on('click', function(){
+    $(".equis").on('click', function(){
         $('#ventana').html(cargarVentana('cerrar',num_jugadores));
         $('.panel').show();
         $("#ventana").show();
@@ -324,7 +350,6 @@ function cargarTablero(){
             girarCartas();
             dibujarJugadores(num_jugadores);
             jugadorActivo= Math.floor(Math.random() * num_jugadores);   
-            console.log("contruccion jugador activo" + jugadorActivo)
             marcarJugador();
             
         })
@@ -341,7 +366,12 @@ function cargarTablero(){
 
     $(document).on('click', '[id*="carta_"]' ,function(){
         let posicion = $(this).attr('id').split('_')
-        moverPiezaJugador(posicion[1],posicion[2]);
+        if(movimientoValido){
+            moverPiezaJugador(posicion[1],posicion[2]);
+        }else{
+            alert('Debe insertar primero la pieza sobrante')
+        }
+        
         // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
@@ -382,6 +412,7 @@ function girarCartas(){
 }
 
     function marcarJugador(){
+        movimientoValido = false;
         $('[id*=jugador]').removeClass('turnoAct')
         $('[id*=jugador] :nth-child(1)').css({'animation': 'none'})
         $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
@@ -394,10 +425,7 @@ function girarCartas(){
         $('#carta_sobrante img').draggable({
             disabled: false
         }).css({'opacity' : '1'});
-        
         marcarJugador();
-
-
     }
 
     //Función que mueve la pieza del jugador

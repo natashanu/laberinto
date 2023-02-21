@@ -21,7 +21,13 @@ function cargarVentana(mensaje, numJugadores){
             "<button id='cancelar' onclick='cerrarVentana();'>Cancelar</button><button id='salir' onclick='salirPartida("+numJugadores+");'>Salir</button>";
             break;
         case "reglas":
-            texto = 'Reglas<img id="equis" onclick="cerrarVentana();" src="./imagenes/equis.png">'
+            texto = '<h2>Reglas<img class="equis" id="equis" onclick="cerrarVentana();" src="./imagenes/equis.png" width="40px"></h2>'+
+            '<p style="text-align:justify">'+
+            '1º Es obligatorio desplazar las hileras del laberinto antes de mover al peón.<br/>'+ 
+            '2º Cada jugador podrá utilizar una vez por turno la carta sobrante para desplazar una hilera.<br/>'+
+            '3º No se podrá desplazar una hilera si a lo largo de ella se encuentra un peón.<br/>'+
+            '4º Está permitido avanzar tanto como sea posible.<br/>'+
+            '5º Los jugadores pueden optar porque el peón permanezca donde estaba, sin obligación de desplazarse.</p>';
             break;
         default:
     }
@@ -202,6 +208,7 @@ function moverPiezaTablero(direccion, fila, columna){
             }
         
         }).css({'transform': 'rotate('+$('#carta_sobrante img').attr('data-grados')+'deg)', 'opacity' : '0.50'});
+        movimientoValido = true;
         return true;
         
     }else{
