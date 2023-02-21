@@ -50,6 +50,13 @@ function cerrarVentana(){
     $("#ventana").hide();
 }
 
+//Array de imagenes de personajes
+personajes = new Array();
+personajes.push(['gatito', 'imagenes/gatito.svg'])
+personajes.push(['brujita', 'imagenes/bruja.svg'])
+personajes.push(['brujito', 'imagenes/brujo.svg'])
+personajes.push(['fantasma', 'imagenes/fantasma.svg'])
+
 function cargarSonido(sonidoRequerido) {
     var sonidos = new Array("campana", "creacion","plop");
     const sonido = document.createElement("audio");
@@ -67,110 +74,125 @@ function cargarSonido(sonidoRequerido) {
 }
 
 function moverPiezaTablero(direccion, fila, columna){
-    if(direccion == "flecha-abajo.png"){
-       //Se mueven las cartas del 1 al 7
-       ultimaCarta = $('#carta_'+ 7 +"_"+columna)
-       ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-       '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
-        for (let i = 6; i > 0; i--) {
-            debugger;
-            let carta = $('#carta_'+ i +"_"+columna);
-            $('#carta_'+ (i+1) +"_"+columna).attr('src',carta.attr('src'))
-            .attr('data-lado1', carta.attr('data-lado1'))
-            .attr('data-lado2', carta.attr('data-lado2'))
-            .attr('data-lado3', carta.attr('data-lado3'))
-            .attr('data-grados', carta.attr('data-grados'))
-            .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+    let mov_valido= true;
+    texto ='';
+    if(direccion == "flecha-abajo.png" || direccion == "flecha-arriba.png"){
+        $('[id*=pieza]').each(function(){
+            if($(this).data('columna')==columna) {mov_valido=false; texto= 'columna'}
+        })
+    }else if(direccion == "flecha-derecha.png" || direccion == "flecha-izquierda.png"){
+        $('[id*=pieza]').each(function(){
+            if($(this).data('fila')==fila) {mov_valido=false; texto = 'fila'}
+        })
+    }
+    if(mov_valido){
+        if(direccion == "flecha-abajo.png"){
+        //Se mueven las cartas del 1 al 7
+        ultimaCarta = $('#carta_'+ 7 +"_"+columna)
+        ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
+        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            for (let i = 6; i > 0; i--) {
+                debugger;
+                let carta = $('#carta_'+ i +"_"+columna);
+                $('#carta_'+ (i+1) +"_"+columna).attr('src',carta.attr('src'))
+                .attr('data-lado1', carta.attr('data-lado1'))
+                .attr('data-lado2', carta.attr('data-lado2'))
+                .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-grados', carta.attr('data-grados'))
+                .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+            }
+            $('#carta_'+ 1 +"_"+columna)
+            .attr('src', $('.draggable').attr('src'))
+            .attr('data-lado1', $('.draggable').attr('data-lado1'))
+            .attr('data-lado2',$('.draggable').attr('data-lado2'))
+            .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-grados', $('.draggable').attr('data-grados'))
+            .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
+            $('.draggable').remove();
         }
-        $('#carta_'+ 1 +"_"+columna)
-        .attr('src', $('.draggable').attr('src'))
-        .attr('data-lado1', $('.draggable').attr('data-lado1'))
-        .attr('data-lado2',$('.draggable').attr('data-lado2'))
-        .attr('data-lado3', $('.draggable').attr('data-lado3'))
-        .attr('data-grados', $('.draggable').attr('data-grados'))
-        .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
-        $('.draggable').remove();
-    }
-    if(direccion == 'flecha-arriba.png'){
-        ultimaCarta = $('#carta_'+ 1 +"_"+columna)
-        ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
-         for (let i = 2; i<8; i++) {
-             debugger;
-             let carta = $('#carta_'+ i +"_"+columna);
-             $('#carta_'+ (i-1) +"_"+columna).attr('src',carta.attr('src'))
-             .attr('data-lado1', carta.attr('data-lado1'))
-             .attr('data-lado2', carta.attr('data-lado2'))
-             .attr('data-lado3', carta.attr('data-lado3'))
-             .attr('data-grados', carta.attr('data-grados'))
-             .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
-         }
-         $('#carta_'+ 7 +"_"+columna)
-         .attr('src', $('.draggable').attr('src'))
-         .attr('data-lado1', $('.draggable').attr('data-lado1'))
-         .attr('data-lado2',$('.draggable').attr('data-lado2'))
-         .attr('data-lado3', $('.draggable').attr('data-lado3'))
-         .attr('data-grados', $('.draggable').attr('data-grados'))
-         .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
-         $('.draggable').remove();
-    }
-    if(direccion == "flecha-derecha.png"){
-        ultimaCarta = $('#carta_'+ fila +"_"+7)
-        ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
-         for (let i = 6; i > 0; i--) {
-             debugger;
-             let carta = $('#carta_'+ fila +"_"+ i);
-             $('#carta_'+ fila +"_"+(i+1)).attr('src',carta.attr('src'))
-             .attr('data-lado1', carta.attr('data-lado1'))
-             .attr('data-lado2', carta.attr('data-lado2'))
-             .attr('data-lado3', carta.attr('data-lado3'))
-             .attr('data-grados', carta.attr('data-grados'))
-             .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
-         }
-         $('#carta_'+ fila +"_"+1)
-         .attr('src', $('.draggable').attr('src'))
-         .attr('data-lado1', $('.draggable').attr('data-lado1'))
-         .attr('data-lado2',$('.draggable').attr('data-lado2'))
-         .attr('data-lado3', $('.draggable').attr('data-lado3'))
-         .attr('data-grados', $('.draggable').attr('data-grados'))
-         .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
-         $('.draggable').remove();
-    }
-    if(direccion == "flecha-izquierda.png"){
-        ultimaCarta = $('#carta_'+ fila +"_"+1)
-        ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
-         for (let i = 2; i<8; i++) {
-            debugger;
-            let carta = $('#carta_'+ fila +"_"+i);
-            $('#carta_'+ fila +"_"+(i-1)).attr('src',carta.attr('src'))
-            .attr('data-lado1', carta.attr('data-lado1'))
-            .attr('data-lado2', carta.attr('data-lado2'))
-            .attr('data-lado3', carta.attr('data-lado3'))
-            .attr('data-grados', carta.attr('data-grados'))
-            .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+        if(direccion == 'flecha-arriba.png'){
+            ultimaCarta = $('#carta_'+ 1 +"_"+columna)
+            ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            for (let i = 2; i<8; i++) {
+                debugger;
+                let carta = $('#carta_'+ i +"_"+columna);
+                $('#carta_'+ (i-1) +"_"+columna).attr('src',carta.attr('src'))
+                .attr('data-lado1', carta.attr('data-lado1'))
+                .attr('data-lado2', carta.attr('data-lado2'))
+                .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-grados', carta.attr('data-grados'))
+                .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+            }
+            $('#carta_'+ 7 +"_"+columna)
+            .attr('src', $('.draggable').attr('src'))
+            .attr('data-lado1', $('.draggable').attr('data-lado1'))
+            .attr('data-lado2',$('.draggable').attr('data-lado2'))
+            .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-grados', $('.draggable').attr('data-grados'))
+            .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
+            $('.draggable').remove();
         }
-        $('#carta_'+ fila +"_"+7)
-        .attr('src', $('.draggable').attr('src'))
-        .attr('data-lado1', $('.draggable').attr('data-lado1'))
-        .attr('data-lado2',$('.draggable').attr('data-lado2'))
-        .attr('data-lado3', $('.draggable').attr('data-lado3'))
-        .attr('data-grados', $('.draggable').attr('data-grados'))
-        .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
-        $('.draggable').remove();
-    }
+        if(direccion == "flecha-derecha.png"){
+            ultimaCarta = $('#carta_'+ fila +"_"+7)
+            ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            for (let i = 6; i > 0; i--) {
+                debugger;
+                let carta = $('#carta_'+ fila +"_"+ i);
+                $('#carta_'+ fila +"_"+(i+1)).attr('src',carta.attr('src'))
+                .attr('data-lado1', carta.attr('data-lado1'))
+                .attr('data-lado2', carta.attr('data-lado2'))
+                .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-grados', carta.attr('data-grados'))
+                .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+            }
+            $('#carta_'+ fila +"_"+1)
+            .attr('src', $('.draggable').attr('src'))
+            .attr('data-lado1', $('.draggable').attr('data-lado1'))
+            .attr('data-lado2',$('.draggable').attr('data-lado2'))
+            .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-grados', $('.draggable').attr('data-grados'))
+            .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
+            $('.draggable').remove();
+        }
+        if(direccion == "flecha-izquierda.png"){
+            ultimaCarta = $('#carta_'+ fila +"_"+1)
+            ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            for (let i = 2; i<8; i++) {
+                debugger;
+                let carta = $('#carta_'+ fila +"_"+i);
+                $('#carta_'+ fila +"_"+(i-1)).attr('src',carta.attr('src'))
+                .attr('data-lado1', carta.attr('data-lado1'))
+                .attr('data-lado2', carta.attr('data-lado2'))
+                .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-grados', carta.attr('data-grados'))
+                .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
+            }
+            $('#carta_'+ fila +"_"+7)
+            .attr('src', $('.draggable').attr('src'))
+            .attr('data-lado1', $('.draggable').attr('data-lado1'))
+            .attr('data-lado2',$('.draggable').attr('data-lado2'))
+            .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-grados', $('.draggable').attr('data-grados'))
+            .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
+            $('.draggable').remove();
+        }
 
-    $('#carta_sobrante').html(ultimaCarta)
-    $('#carta_sobrante img').addClass('draggable').draggable({
-        containment: '#contenedor',
-        revert: 'invalid',
-        opacity: 0.50,
-        drag: function(event,ui){
-            ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
-        }
-       
-    }).css('transform', 'rotate('+$('#carta_sobrante img').data('grados')+'deg)');
-    console.log($('.draggable'))
+        $('#carta_sobrante').html(ultimaCarta)
+        $('#carta_sobrante img').addClass('draggable').draggable({
+            containment: '#contenedor',
+            revert: 'invalid',
+            opacity: 0.50,
+            drag: function(event,ui){
+                ui.helper.css({"width": $('img[data-reservada="NO"]').width(), 'height' : $('img[data-reservada="NO"]').height()})
+            }
+        
+        }).css('transform', 'rotate('+$('#carta_sobrante img').data('grados')+'deg)');
+        console.log($('.draggable'))
+    }else{
+        alert('No puede introducir la pieza en esta ' + texto )
+    }
 
 }

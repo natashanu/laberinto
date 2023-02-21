@@ -78,6 +78,7 @@ footer{
 }
 
 
+
 #carta_sobrante{
     display: flex;
     justify-content: center;
@@ -97,6 +98,7 @@ footer{
 *   PUNTAJE   *
 ***************/
 .jugador{
+    position: relative;
     width: 10vw;
     display: flex;
     flex-direction: column;
@@ -118,6 +120,15 @@ footer{
     border-top: 0ch;
     background-color: white;
 }
+
+.jugador img{
+    width: 4vw;
+    height: 4vw;
+    position: absolute;
+    margin-left: -4vw;
+    margin-top: 10px;
+}
+
 #equis, #reglas{
     width: 50px;
     float: right;

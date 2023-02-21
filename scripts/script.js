@@ -38,14 +38,17 @@ function cargarEstructura(){
     $('main div').addClass('rainbow-button');
     $('footer').html('');
     $(document).on('click', '#jugadores2', function(){
+        jug_elegidos = new Array();
         num_jugadores = 2;
         crearPartida();
     })
     $(document).on('click', '#jugadores3', function(){
+        jug_elegidos = new Array();
         num_jugadores = 3
         crearPartida();
     })
     $(document).on('click', '#jugadores4', function(){
+        jug_elegidos = new Array();
         num_jugadores = 4
         crearPartida();
     })
@@ -115,14 +118,26 @@ function crearPartida(){
     $('header').html('<img id="volver" src="imagenes/flecha.png" width="50px" title="Volver">');
     $(document).on('click', '#volver', function(){
         cargarEstructura();
-        seleccionPartida();
     });
     let texto = "<h2>Partida de " + num_jugadores+ " jugadores</h2>";
     for (let i = 0; i < num_jugadores; i++) {
-        texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +' : <input><button onclick="elegirJugador(\'jugador_'+ (i+1) +'\');">Elegir jugador</button></div>'; 
+        texto+= '<div id="jugador_'+ (i+1) +'">Jugador '+ (i+1) +' : <input>'+
+        '<button onclick="elegirJugador(\'jugador_'+ (i+1) +'\');">Elegir jugador</button>'+
+        '<select></select>'+
+        '</div>'; 
     }
     texto += '<div class="rainbow-button otro" onclick="verificarDatos();">Empezar partida</div>';
     $('main').html(texto);
+    $('select').hide()
+    $('select').on('change', function(){
+        jug_elegidos.push($('select').val());
+        $('select option').each(function(){
+            for (let i = 0; i < jug_elegidos.length; i++) {
+                if($(this).val() == jug_elegidos[i]) $(this).hide()
+                
+            }
+        })
+    })
 }
 
 /*Función que verifica que los datos introducidos en el input no son de un usuario existente o un usuario invalido (cadena vacía)*/
@@ -130,27 +145,38 @@ function verificarDatos(){
     $.getJSON('servidor/cargarUsuarios.php', function(datos){
         valido = true;
         for (let i = 0; i < num_jugadores; i++) {
-            if($('#jugador_'+ (i+1) + ' input').val()==""){
-                valido = false;
-                $('#jugador_'+ (i+1) + ' input').addClass('rojo');
-            }else if($('#jugador_'+ (i+1) + ' input').val()!=""){
-                $('#jugador_'+ (i+1) + ' input').removeClass('rojo');
-            }
-            $.each(datos,function(){
-                if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+            if($('#jugador_'+ (i+1) + ' input').is(':visible')){
+                if($('#jugador_'+ (i+1) + ' input').val()==""){
                     valido = false;
                     $('#jugador_'+ (i+1) + ' input').addClass('rojo');
-                }else if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+                }else if($('#jugador_'+ (i+1) + ' input').val()!=""){
                     $('#jugador_'+ (i+1) + ' input').removeClass('rojo');
                 }
-            })
-            
+                $.each(datos,function(){
+                    if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+                        valido = false;
+                        $('#jugador_'+ (i+1) + ' input').addClass('rojo');
+                    }else if($('#jugador_'+ (i+1) + ' input').val()==this.nombre){
+                        $('#jugador_'+ (i+1) + ' input').removeClass('rojo');
+                    }
+                })
+            }else{
+                if($('#jugador_'+ (i+1) + ' select').val()=="0"){
+                    valido = false;
+                    $('#jugador_'+ (i+1) + ' select').addClass('rojo');
+                }else if($('#jugador_'+ (i+1) + ' select').val()!="0"){
+                    $('#jugador_'+ (i+1) + ' select').removeClass('rojo');
+                }
+            }          
         }
         if(valido){
+            console.log('entro')
             for (let i = 0; i < num_jugadores; i++) {
-                $.post('servidor/crearUsuario.php', {nombre: $('#jugador_'+ (i+1) + ' input').val(), puntos:0}, function(){
-                    
-                })
+                if($('#jugador_'+ (i+1) + ' input').is(':visible')){
+                    $.post('servidor/crearUsuario.php', {nombre: $('#jugador_'+ (i+1) + ' input').val(), puntos:0}, function(){
+                        
+                    })
+                }
             }
             cargarTablero()  
         }
@@ -160,22 +186,30 @@ function verificarDatos(){
 
 //Se puede reutilizar para cada modo de juego
 //Sirve para elegir un jugador existente en la BD
+jug_elegidos = new Array();
 function elegirJugador(jugador){
+    let numJugador= jugador.split('_')
+    $('#jugador_'+ numJugador[1] + ' input').add('#jugador_'+ numJugador[1] + ' button').hide()
+    console.log(jug_elegidos)
     console.log(jugador)
     $.getJSON('servidor/cargarUsuarios.php', function(datos){
-        let numJugador= jugador.split('_')
-        let texto = '<select id="select_'+numJugador[1]+'">'+
-            '<option value="0">Selecciona un jugador</option>'
+        let texto = '<option value="0">Selecciona un jugador</option>'
         $.each(datos,function(){
-            texto += '<option value="'+this.idUsuario+'">'+ this.nombre+'</option>';
+            texto += '<option value="'+this.nombre+'">'+ this.nombre+'</option>';
         })
+        //$('#' + jugador).html("Jugador " + numJugador[1] +" :" + texto);
+        $('#jugador_'+ numJugador[1] + ' select').html(texto).show()
 
-        texto+= '</select>';
-        $('#' + jugador).html("Jugador " + numJugador[1] +" :" + texto);
-        $('#select_'+numJugador[1]).on('change', function(){
-            
+        $('select option').each(function(){
+            for (let i = 0; i < jug_elegidos.length; i++) {
+                if($(this).val() == jug_elegidos[i]) $(this).hide()
+                
+            }
         })
+            
     })
+
+    
 }
 
 function cargarTablero(){
@@ -184,10 +218,13 @@ function cargarTablero(){
     lado = 9;
     let cabecera = '<img id="equis" src="./imagenes/equis.png" title="Salir"><img id="reglas" src="./imagenes/reglas.png" title="Reglas">'+
                     '<div id="jugadores">';
+    personajes = personajes.sort((a, b) => 0.5 - Math.random());          
     for (let k = 0; k < num_jugadores; k++) {
+        let jugador = ($('#jugador_'+ (k+1) + ' input').is(':visible'))? $('#jugador_'+ (k+1) + ' input').val() : $('#jugador_'+ (k+1) + ' select').val()
         cabecera += '<div class="jugador" id="jugador'+(k+1)+'">'+
-            '<div>'+ $('#jugador_'+ (k+1) + ' input').val() +'</div>' +
+            '<div>'+ jugador +'</div>' +
             '<div>100</div>'+
+            '<img src="'+ personajes[k][1] +'">'+
         '</div>';
     }
     cabecera += '<dialog id="ventana"></dialog></div>';
@@ -224,11 +261,11 @@ function cargarTablero(){
                     if(bandera){
                         if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
                             carta = Object.values(cartas[posicion]);
-                            console.log(carta)
+                            //console.log(carta)
                             texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
                             '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
                             posicion++;
-                            console.log(posicion)
+                            //console.log(posicion)
                         }else{
                             texto += '<p></p>';
                         }
@@ -331,7 +368,9 @@ function girarCartas(){
 
     function marcarJugador(){
         $('[id*=jugador]').removeClass('turnoAct')
+        $('[id*=jugador] :nth-child(1)').css({'animation': 'none'})
         $('#jugador'+(jugadorActivo+1)).addClass('turnoAct')
+        $('#jugador'+(jugadorActivo+1) + ' :nth-child(1)').css({'animation': 'slidebg 3s linear infinite'})
     }
 
     veces_funcion=0;
