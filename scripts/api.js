@@ -44,8 +44,6 @@ function salirPartida(numJugadores){
         
     }
     if(bandera.length == numJugadores){
-        // cargarEstructura();
-        // seleccionPartida();
         location.reload();
     }
 

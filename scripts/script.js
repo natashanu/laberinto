@@ -227,7 +227,6 @@ function verificarDatos(){
             }          
         }
         if(valido){
-            console.log('entro')
             for (let i = 0; i < num_jugadores; i++) {
                 if($('#jugador_'+ (i+1) + ' input').is(':visible')){
                     $.post('servidor/crearUsuario.php', {nombre: $('#jugador_'+ (i+1) + ' input').val(), puntos:0}, function(){
@@ -269,19 +268,17 @@ function cargarTablero(){
         $("#ventana").show();
     })
 
-    texto ='<div id="tablero">';
+    texto ='<div class="areaJuego"><aside id="aside1"></aside><div id="tablero">';
     $.getJSON('servidor/cargarCartasRes.php', function(cartasRes){
         $.getJSON('servidor/cargarCartas.php', function(cartas){
             cartas = cartas.sort((a, b) => 0.5 - Math.random());
             posicion = 0;
-            //console.log(cartas);
             for (let i = 0; i < lado; i++) {
                 texto += '<div class="fila">';         
                 for (let j = 0; j < lado; j++) {        
                 let bandera = true;
                     $.each(cartasRes, function(){
                         if(this.fila==i && this.columna==j){
-                            //console.log("i :" + i + " j: " + j + " fila: " + this.fila + " columna: " + this.columna )
                             texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+
                             '" data-lado1="'+this.lado1+'" data-lado2="'+this.lado2+'" data-lado3="'+this.lado3+'">';
                             bandera = false;
@@ -290,11 +287,9 @@ function cargarTablero(){
                     if(bandera){
                         if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
                             carta = Object.values(cartas[posicion]);
-                            //console.log(carta)
                             texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
                             '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
                             posicion++;
-                            //console.log(posicion)
                         }else{
                             texto += '<p></p>';
                         }
@@ -306,12 +301,13 @@ function cargarTablero(){
                 
             }
             carta = Object.values(cartas[posicion]);
-            texto += "</div>"+
+            texto += "</div><aside id='aside2'></aside></div>"+
                     "<div id='botones'>"+
-                        "<button class='rainbow-button'>Mostrar carta</button>"+
+                        "<button id='mostrar' class='rainbow-button'>Mostrar carta</button>"+
                         "<button class='rainbow-button'>Comprobar carta</button>"+
                         "<button id='saltar' class='rainbow-button'>Saltar turno</button>"+
                     "</div>";
+
             $('main').html(texto);
             $('footer').html("<div id='carta_sobrante'><img src='imagenes/"+ carta[1]+"' data-lado1='"+carta[2]+
             "' data-lado2='"+carta[3]+"' data-lado3='"+carta[4]+"'  data-reservada='NO'></div>");
@@ -345,7 +341,7 @@ function cargarTablero(){
              });
 
             $('img[src*="flecha"]').css({'width': '30px', 'margin' : 'auto'})
-
+            cargarTarjetas();
             girarCartas();
             dibujarJugadores(num_jugadores);
             jugadorActivo= Math.floor(Math.random() * num_jugadores);   
@@ -354,13 +350,13 @@ function cargarTablero(){
         })
         
     })
-    $(document).on('click', '#insertar' ,function(){
-
-    })
-
 
     $(document).on('click', '#saltar' ,function(){
         saltarTurno()
+    })
+
+    $(document).on('click', '#mostrar' ,function(){
+        $('#tarjetas_'+(jugadorActivo+1) + ' :last-child').toggleClass('flip')
     })
 
     $(document).on('click', '[id*="carta_"]' ,function(){
@@ -371,10 +367,49 @@ function cargarTablero(){
             alert('Debe insertar primero la pieza sobrante')
         }
         
-        // $('#carta_sobrante').css({ 'margin-top': '0','transition': '0.9s ease-out'})
     })
 
 }
+
+function cargarTarjetas(){
+    //Creamos los espacios para las tarjetas de tesoros de todos los jugadores
+    for (let l = 0; l < num_jugadores; l++) {
+        let jugador = $('#jugador'+(l+1)+ ' :nth-child(1)').text();
+        if(l%2==0) $('#aside1').append('<div id="tarjetas_'+(l+1)+'" class="tarjetas">'+ jugador+'</div>')
+        else $('#aside2').append('<div id="tarjetas_'+(l+1)+'" class="tarjetas">'+ jugador+'</div>')
+    }
+    $.getJSON('servidor/cargarTarjetas.php', function(tarjetas){
+        console.log(tarjetas)
+        tarjetas = tarjetas.sort((a, b) => 0.5 - Math.random());
+        let tarjXjug = tarjetas.length/num_jugadores;
+        let numTarjetas = tarjXjug;
+        let numJugador = 0; 
+        izquierda = 1;
+        $.each(tarjetas, function(index, value){
+            if(index<numTarjetas){
+                $('#tarjetas_'+(numJugador+1)).append(
+                    '<div class="flip-card">'+
+                        '<div class="flip-card-front">'+
+                            '<img src="./imagenes/tarjetas/parteTrasera.png" alt="">'+
+                        '</div>'+
+                        '<div class="flip-card-back">'+
+                            '<img src="./imagenes/tarjetas/'+this.url+'" alt="">'+
+                        '</div>'+
+                    '</div>'
+                )
+                $('#tarjetas_'+(numJugador+1) + ' :last-child').css('left', izquierda+'vw')
+                izquierda = izquierda+1;
+            }else{
+                numJugador ++;
+                numTarjetas = numTarjetas + tarjXjug;
+                izquierda = 1;
+            }
+        })
+        
+    })
+
+}
+
 
 function girarCartas(){
     $('img[data-reservada="NO"]').each(function(){
@@ -400,7 +435,6 @@ function girarCartas(){
                         break;
                     default:
                 }
-                //console.log(this.id + ' lado' + j + " "+ lado);
                 $(this).attr(pos, lado)
                 console.log($(this).attr(pos))
             }
@@ -433,7 +467,6 @@ function girarCartas(){
         console.log("fila" + i + " columna" + j)
         i = parseFloat(i);
         j = parseFloat(j);
-        console.log("juagdor " +(jugadorActivo+1))
         let fila = parseInt($('#pieza_'+(jugadorActivo+1)).attr('data-fila'))
         let columna = parseInt($('#pieza_'+(jugadorActivo+1)).attr('data-columna'))
         //Primero verificamos la contiguidad
@@ -485,7 +518,6 @@ function girarCartas(){
         for (let k = 0; k < 3; k++) {
             if(carta2.attr('data-lado'+(k+1))==lado2) bandera2=true;        
         }
-        console.log(bandera1 +" "+ bandera2)
         if(bandera1==true && bandera2==true){
             $('#pieza_'+(jugadorActivo+1))
             .attr('data-fila', i)

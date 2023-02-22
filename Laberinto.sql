@@ -104,3 +104,36 @@ insert into cartas values
 (33, 'payaso.png', 'izquierda', 'abajo', 'arriba'),
 (34, 'sapo.png', 'izquierda', 'abajo', 'arriba');
 
+-- Creación de la tabla de las tarjetas
+create table if not exists tarjetas(
+idTarjeta tinyint,
+url varchar(30) not null,
+tesoro varchar(30) not null,
+	constraint pk_carta primary key (idTarjeta)
+)engine=InnoDB;
+
+insert into tarjetas values 
+(1, 'anillo.png', 'anillo'),
+(2, 'aranha.png', 'aranha'),
+(3, 'buho.png', 'buho'),
+(4, 'caballero.png', 'caballero'),
+(5, 'calavera.png', 'calavera'),
+(6, 'candelabro.png', 'candelabro'),
+(7, 'cofre.png', 'cofre'),
+(8, 'corona.png', 'corona'),
+(9, 'escarabajo.png', 'escarabajo'),
+(10, 'espada.png', 'espada'),
+(11, 'genio.png', 'genio'),
+(12, 'hada.png', 'hada'),
+(13, 'lagartija.png', 'lagartija'),
+(14, 'libro.png', 'libro'),
+(15, 'llaves.png', 'llaves'),
+(16, 'mapa.png', 'mapa'),
+(17, 'mariposa.png', 'mariposa'),
+(18, 'murcielago.png', 'murcielago'),
+(19, 'payaso.png', 'payaso'),
+(20, 'rata.png', 'rata'),
+(21, 'sapo.png', 'sapo'),
+(22, 'tesoro.png', 'tesoro'),
+(23, 'fantasma.png', 'fantasma'),
+(24, 'gema.png', 'gema');

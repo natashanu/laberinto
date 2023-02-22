@@ -84,11 +84,12 @@ a{
     border: white solid 1px;
 }
 
+/**************
+*      PIE    *
+***************/
 footer{
     position:relative;
 }
-
-
 
 #carta_sobrante{
     display: flex;
@@ -249,10 +250,50 @@ button, input, select{
 /**************
 *   TABLERO   *
 ***************/
+.areaJuego{
+    display: flex;
+    justify-content: space-around;
+}
+
+aside{
+    display: flex;
+    flex-direction: column;
+    height: 25vw;
+    justify-content: space-around;
+
+}
+
+.tarjetas{
+    /* color: aliceblue; */
+    position: relative;
+    /*background-color:#090714;*/
+    background-color: rgba(236, 152, 204, 0.842);
+    margin: auto;
+    border-radius: 10px;
+    height: 11vw;
+    width: 25vw;
+}
+
+#tarjetas_1{
+    border: rgb(235, 84, 240)  solid 5px;
+}
+
+#tarjetas_3{
+    border: solid 5px rgb(221, 186, 69) ;
+}
+
+#tarjetas_4{
+    border: solid 5px rgb(147, 202, 247) ;
+}
+
+#tarjetas_2{
+    border: solid 5px rgb(166, 248, 146) ;
+}
+
+
 #tablero{
     position: relative;
     background-color:#090714;
-    margin: auto;
     border-radius: 10px;
     width: 25vw;
     height: 25vw;
@@ -264,8 +305,6 @@ button, input, select{
     display: grid;
     grid-template-columns: repeat(9, 11%);
     height: 11%;
-    /* height: 8vh; */
-    /* grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr; */
 }
 
 .fila img{
@@ -321,14 +360,12 @@ dialog{
     margin-top: 15vh;
     text-align: center;
     width: 30vw;
-    /* border: #090714 solid 1px; */
     border: #090714 solid 2px;
     color: #090714;
     background-image: linear-gradient(90deg, rgb(227, 114, 231) 0%, rgb(221, 186, 69) 49%, rgb(147, 202, 247) 80%, rgb(227, 114, 231) 100%);
     border-radius: 5px;
     overflow: hidden;
     z-index: 100;
-    /* background-color:  rgba(227, 161, 236, 0.942); */
 }
 
 dialog button{
@@ -365,10 +402,60 @@ dialog button{
     border: rgb(147, 202, 247)  solid 4px;
 }
 
+/**************
+*  DRAGGABLE  *
+***************/
+/*La mayoría de estos estilos se tocan en el js*/
 .draggable{
 
 }
 .droppable:hover .draggable{
     width: 30px;
     border: pink solid 2px;
+}
+
+/**************
+*  FLIP-CARD  *
+***************/
+.flip-card {
+    border: 2px solid aliceblue;
+    border-radius: 10px;
+    position: absolute;
+    background-color: transparent;
+    width: 4vw;
+    height: 8vw;
+    transform-style: preserve-3d;
+    transition: all 0.8s ease;
+    object-fit: cover;  
+}
+  
+.flip {
+    transform: rotateY(180deg);
+    border: none;
+}
+
+.flip-card img{
+    width: 100%;
+    height: 100%;
+}
+  
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+
+}
+  
+.flip-card-back {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    background-color: #1A1A4A;
+    color: aliceblue;
+    transform: rotateY(180deg);
 }
