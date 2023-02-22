@@ -251,7 +251,7 @@ function cargarTablero(){
         let jugador = ($('#jugador_'+ (k+1) + ' input').is(':visible'))? $('#jugador_'+ (k+1) + ' input').val() : $('#jugador_'+ (k+1) + ' select').val()
         cabecera += '<div class="jugador" id="jugador'+(k+1)+'">'+
             '<div>'+ jugador +'</div>' +
-            '<div>100</div>'+
+            '<div>0</div>'+
             '<img src="'+ personajes[k][1] +'">'+
         '</div>';
     }
@@ -280,7 +280,7 @@ function cargarTablero(){
                     $.each(cartasRes, function(){
                         if(this.fila==i && this.columna==j){
                             texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/reservadas/'+ this.url+
-                            '" data-lado1="'+this.lado1+'" data-lado2="'+this.lado2+'" data-lado3="'+this.lado3+'">';
+                            '" data-lado1="'+this.lado1+'" data-lado2="'+this.lado2+'" data-lado3="'+this.lado3+'" data-tesoro="'+this.tesoro+'">';
                             bandera = false;
                         }
                     })
@@ -288,7 +288,7 @@ function cargarTablero(){
                         if(i!=0 && j!=0 && i!=lado-1 && j!=lado-1){
                             carta = Object.values(cartas[posicion]);
                             texto += '<img id="carta_'+i+'_'+j+'" src="imagenes/'+ carta[1]+
-                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'"  data-reservada="NO">';
+                            '" data-lado1="'+carta[2]+'" data-lado2="'+carta[3]+'" data-lado3="'+carta[4]+'" data-tesoro="'+carta[5]+'" data-reservada="NO">';
                             posicion++;
                         }else{
                             texto += '<p></p>';
@@ -304,13 +304,13 @@ function cargarTablero(){
             texto += "</div><aside id='aside2'></aside></div>"+
                     "<div id='botones'>"+
                         "<button id='mostrar' class='rainbow-button'>Mostrar carta</button>"+
-                        "<button class='rainbow-button'>Comprobar carta</button>"+
+                        "<button id='comprobar' class='rainbow-button'>Comprobar carta</button>"+
                         "<button id='saltar' class='rainbow-button'>Saltar turno</button>"+
                     "</div>";
 
             $('main').html(texto);
             $('footer').html("<div id='carta_sobrante'><img src='imagenes/"+ carta[1]+"' data-lado1='"+carta[2]+
-            "' data-lado2='"+carta[3]+"' data-lado3='"+carta[4]+"'  data-reservada='NO'></div>");
+            "' data-lado2='"+carta[3]+"' data-lado3='"+carta[4]+"' data-tesoro='"+this.tesoro+"' data-reservada='NO'></div>");
             $('#carta_sobrante img').addClass('draggable').draggable({
                 containment: '#contenedor',
                 revert: 'invalid',
@@ -351,13 +351,19 @@ function cargarTablero(){
         
     })
 
+    $(document).on('click', '#mostrar' ,function(){
+        $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child').toggleClass('flip')
+    })
+
+    $(document).on('click', '#comprobar' ,function(){
+        comprobarCarta();
+
+    })
+
     $(document).on('click', '#saltar' ,function(){
         saltarTurno()
     })
 
-    $(document).on('click', '#mostrar' ,function(){
-        $('#tarjetas_'+(jugadorActivo+1) + ' :last-child').toggleClass('flip')
-    })
 
     $(document).on('click', '[id*="carta_"]' ,function(){
         let posicion = $(this).attr('id').split('_')
@@ -393,7 +399,7 @@ function cargarTarjetas(){
                             '<img src="./imagenes/tarjetas/parteTrasera.png" alt="">'+
                         '</div>'+
                         '<div class="flip-card-back">'+
-                            '<img src="./imagenes/tarjetas/'+this.url+'" alt="">'+
+                            '<img src="./imagenes/tarjetas/'+this.url+'" data-tesoro="'+this.tesoro+'" alt="">'+
                         '</div>'+
                     '</div>'
                 )
@@ -454,6 +460,7 @@ function girarCartas(){
 
     function saltarTurno(){
         cargarSonido('plop');
+        $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child').removeClass('flip')  
         jugadorActivo = (jugadorActivo>=num_jugadores-1)? 0 : jugadorActivo+1;
         $('#carta_sobrante img').draggable({
             disabled: false
@@ -526,5 +533,21 @@ function girarCartas(){
         }else alert('No se puede mover a la pieza seleccionada')
 
     }
+
+    function comprobarCarta(){
+      $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child').toggleClass('flip')  
+      let tarjeta = $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child .flip-card-back img').attr('data-tesoro')
+      let fila = $('#pieza_'+(jugadorActivo+1)).attr('data-fila')
+      let columna = $('#pieza_'+(jugadorActivo+1)).attr('data-columna')
+      let carta = $('#carta_'+fila+'_'+columna).attr('data-tesoro')
+      if(tarjeta == carta){
+        $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child').remove()
+        $('#jugador'+(jugadorActivo+1)+ ' :nth-child(2)').text(parseInt($('#jugador'+(jugadorActivo+1)+ ' :nth-child(2)').text()) + 100)
+      }else{
+        $('#tarjetas_'+(jugadorActivo+1) + ' .flip-card:last-child').removeClass('flip')  
+      }
+
+    }
+    
 
  

@@ -96,7 +96,8 @@ function moverPiezaTablero(direccion, fila, columna){
         //Se mueven las cartas del 1 al 7
         ultimaCarta = $('#carta_'+ 7 +"_"+columna)
         ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+        '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-tesoro="'+ultimaCarta.attr('data-tesoro')+'" '+
+        'data-grados="'+ultimaCarta.attr('data-grados')+'">';
             for (let i = 6; i > 0; i--) {
                 debugger;
                 let carta = $('#carta_'+ i +"_"+columna);
@@ -104,6 +105,7 @@ function moverPiezaTablero(direccion, fila, columna){
                 .attr('data-lado1', carta.attr('data-lado1'))
                 .attr('data-lado2', carta.attr('data-lado2'))
                 .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-tesoro', carta.attr('data-tesoro'))
                 .attr('data-grados', carta.attr('data-grados'))
                 .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
             }
@@ -112,6 +114,7 @@ function moverPiezaTablero(direccion, fila, columna){
             .attr('data-lado1', $('.draggable').attr('data-lado1'))
             .attr('data-lado2',$('.draggable').attr('data-lado2'))
             .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-tesoro', $('.draggable').attr('data-tesoro'))
             .attr('data-grados', $('.draggable').attr('data-grados'))
             .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
             $('.draggable').remove();
@@ -119,7 +122,8 @@ function moverPiezaTablero(direccion, fila, columna){
         if(direccion == 'flecha-arriba.png'){
             ultimaCarta = $('#carta_'+ 1 +"_"+columna)
             ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-tesoro="'+ultimaCarta.attr('data-tesoro')+'" '+
+            'data-grados="'+ultimaCarta.attr('data-grados')+'">';
             for (let i = 2; i<8; i++) {
                 debugger;
                 let carta = $('#carta_'+ i +"_"+columna);
@@ -127,6 +131,7 @@ function moverPiezaTablero(direccion, fila, columna){
                 .attr('data-lado1', carta.attr('data-lado1'))
                 .attr('data-lado2', carta.attr('data-lado2'))
                 .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-tesoro', carta.attr('data-tesoro'))
                 .attr('data-grados', carta.attr('data-grados'))
                 .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
             }
@@ -135,6 +140,7 @@ function moverPiezaTablero(direccion, fila, columna){
             .attr('data-lado1', $('.draggable').attr('data-lado1'))
             .attr('data-lado2',$('.draggable').attr('data-lado2'))
             .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-tesoro', $('.draggable').attr('data-tesoro'))
             .attr('data-grados', $('.draggable').attr('data-grados'))
             .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
             $('.draggable').remove();
@@ -142,7 +148,8 @@ function moverPiezaTablero(direccion, fila, columna){
         if(direccion == "flecha-derecha.png"){
             ultimaCarta = $('#carta_'+ fila +"_"+7)
             ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-tesoro="'+ultimaCarta.attr('data-tesoro')+'" '+
+            'data-grados="'+ultimaCarta.attr('data-grados')+'">';
             for (let i = 6; i > 0; i--) {
                 debugger;
                 let carta = $('#carta_'+ fila +"_"+ i);
@@ -150,6 +157,7 @@ function moverPiezaTablero(direccion, fila, columna){
                 .attr('data-lado1', carta.attr('data-lado1'))
                 .attr('data-lado2', carta.attr('data-lado2'))
                 .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-tesoro', carta.attr('data-tesoro'))
                 .attr('data-grados', carta.attr('data-grados'))
                 .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
             }
@@ -158,6 +166,7 @@ function moverPiezaTablero(direccion, fila, columna){
             .attr('data-lado1', $('.draggable').attr('data-lado1'))
             .attr('data-lado2',$('.draggable').attr('data-lado2'))
             .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-tesoro', $('.draggable').attr('data-tesoro'))
             .attr('data-grados', $('.draggable').attr('data-grados'))
             .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
             $('.draggable').remove();
@@ -165,7 +174,8 @@ function moverPiezaTablero(direccion, fila, columna){
         if(direccion == "flecha-izquierda.png"){
             ultimaCarta = $('#carta_'+ fila +"_"+1)
             ultimaCarta ='<img src="'+ultimaCarta.attr('src')+'" data-lado1="'+ultimaCarta.attr('data-lado1') +
-            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-grados="'+ultimaCarta.attr('data-grados')+'">';
+            '" data-lado2="'+ultimaCarta.attr('data-lado2')+'" data-lado3="'+ultimaCarta.attr('data-lado3') + '" data-tesoro="'+ultimaCarta.attr('data-tesoro')+'" '+
+            'data-grados="'+ultimaCarta.attr('data-grados')+'">';
             for (let i = 2; i<8; i++) {
                 debugger;
                 let carta = $('#carta_'+ fila +"_"+i);
@@ -173,6 +183,7 @@ function moverPiezaTablero(direccion, fila, columna){
                 .attr('data-lado1', carta.attr('data-lado1'))
                 .attr('data-lado2', carta.attr('data-lado2'))
                 .attr('data-lado3', carta.attr('data-lado3'))
+                .attr('data-tesoro', carta.attr('data-tesoro'))
                 .attr('data-grados', carta.attr('data-grados'))
                 .css('transform', 'rotate('+carta.attr('data-grados') +'deg)')
             }
@@ -181,6 +192,7 @@ function moverPiezaTablero(direccion, fila, columna){
             .attr('data-lado1', $('.draggable').attr('data-lado1'))
             .attr('data-lado2',$('.draggable').attr('data-lado2'))
             .attr('data-lado3', $('.draggable').attr('data-lado3'))
+            .attr('data-tesoro', $('.draggable').attr('data-tesoro'))
             .attr('data-grados', $('.draggable').attr('data-grados'))
             .css('transform', 'rotate('+$('.draggable').attr('data-grados') +'deg)')
             $('.draggable').remove();

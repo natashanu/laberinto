@@ -455,7 +455,6 @@ dialog button{
     flex-direction: column;
     justify-content: center;
     align-content: center;
-    background-color: #1A1A4A;
     color: aliceblue;
     transform: rotateY(180deg);
 }
